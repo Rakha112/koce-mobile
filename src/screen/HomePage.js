@@ -7,6 +7,7 @@ import SearchIcon from '../assets/svg/SearchIcon.svg';
 import CartIcon from '../assets/svg/CartIcon.svg';
 import {useNavigation} from '@react-navigation/native';
 import Carousel from '../components/Carousel';
+import ListMenu from '../components/ListMenu';
 const HomePage = () => {
   const navigation = useNavigation();
 
@@ -17,6 +18,7 @@ const HomePage = () => {
           flexDirection: 'row',
           justifyContent: 'space-between',
           alignItems: 'center',
+          marginBottom: 10,
         }}>
         <View style={{flex: 1}}>
           <TouchableWithoutFeedback
@@ -36,19 +38,14 @@ const HomePage = () => {
         <TouchableWithoutFeedback
           style={styles.cartIcon}
           onPress={() => navigation.navigate('Keranjang')}>
-          <CartIcon width={26} height={26} fill={'black'} />
+          <CartIcon width={28} height={28} stroke={'black'} />
         </TouchableWithoutFeedback>
       </View>
-      <ScrollView onScrollBeginDrag={() => Keyboard.dismiss()}>
+      <ScrollView
+        onScrollBeginDrag={() => Keyboard.dismiss()}
+        showsVerticalScrollIndicator={false}>
         <Carousel />
-        <Text style={{height: 100}}>HALOO</Text>
-        <Text style={{height: 100}}>HALOO</Text>
-        <Text style={{height: 100}}>HALOO</Text>
-        <Text style={{height: 100}}>HALOO</Text>
-        <Text style={{height: 100}}>HALOO</Text>
-        <Text style={{height: 100}}>HALOO</Text>
-        <Text style={{height: 100}}>HALOO</Text>
-        <Text style={{height: 100}}>HALOO END</Text>
+        <ListMenu />
       </ScrollView>
     </SafeAreaView>
   );

@@ -33,7 +33,7 @@ const CarouselComp = () => {
       contentContainerStyle={{
         // contentInset alternative for Android
         paddingHorizontal: 5, // Horizontal spacing before and after the ScrollView
-        marginVertical: 30,
+        marginTop: 10,
       }}>
       {dataText.map((data, index) => {
         return (
