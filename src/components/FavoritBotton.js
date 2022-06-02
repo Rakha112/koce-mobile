@@ -1,5 +1,5 @@
-// import {StyleSheet} from 'react-native';
-import React from 'react';
+import {StyleSheet} from 'react-native';
+import React, {useState} from 'react';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import FavoritIcon from '../assets/svg/FavoriteIcon.svg';
 import Animated, {
@@ -9,6 +9,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 const FavoritBotton = () => {
+  const [favorit, setFavorit] = useState(false);
   const scaleValue = useSharedValue(1);
   const animatedStyles = useAnimatedStyle(() => {
     return {transform: [{scale: scaleValue.value}]};
@@ -21,15 +22,26 @@ const FavoritBotton = () => {
           easing: Easing.out(Easing.exp),
         });
       }}
-      onPress={() => console.log('PRESS')}
+      onPress={() => {
+        if (favorit) {
+          setFavorit(false);
+        } else {
+          setFavorit(true);
+        }
+      }}
       onPressOut={() => {
         scaleValue.value = withTiming(1, {
           duration: 500,
           easing: Easing.out(Easing.exp),
         });
       }}>
-      <Animated.View style={animatedStyles}>
-        <FavoritIcon width={26} height={26} fill={'white'} stroke={'#FFA901'} />
+      <Animated.View style={[styles.container, animatedStyles]}>
+        <FavoritIcon
+          width={26}
+          height={26}
+          fill={favorit ? '#FFA901' : 'white'}
+          stroke={favorit ? '#FFA901' : '#B2B1B9'}
+        />
       </Animated.View>
     </TouchableWithoutFeedback>
   );
@@ -37,4 +49,8 @@ const FavoritBotton = () => {
 
 export default FavoritBotton;
 
-// const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  container: {
+    marginHorizontal: 10,
+  },
+});

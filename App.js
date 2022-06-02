@@ -14,6 +14,8 @@ const App = () => {
   const Stack = createStackNavigator();
   const initialState = {
     bottomSheet: false,
+    rasa: 0,
+    counter: 1,
   };
   const rootReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -21,6 +23,16 @@ const App = () => {
         return {
           ...state,
           bottomSheet: action.payload,
+        };
+      case 'RASA':
+        return {
+          ...state,
+          rasa: action.payload,
+        };
+      case 'COUNTER':
+        return {
+          ...state,
+          counter: action.payload,
         };
       default:
         return state;

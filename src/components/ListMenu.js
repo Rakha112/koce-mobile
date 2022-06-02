@@ -16,18 +16,21 @@ const ListMenu = () => {
           deskripsi:
             'Suju - Super Tujuh, Setengah Ekor Ayam Yang Dipotong Menjadi 7',
           harga: 38000,
+          maxRasa: 1,
         },
         {
           nama: 'Half - Half',
           image: require('../assets/images/halfHalf.png'),
           deskripsi: 'Satu Ekor Ayam Yang Dipotong Menjadi 14 Bagian',
           harga: 68000,
+          maxRasa: 2,
         },
         {
           nama: 'Whole Cut',
           image: require('../assets/images/wholeCut.png'),
           deskripsi: 'Satu Ekor Ayam Yang Dipotong Menjadi 14 Bagian',
           harga: 68000,
+          maxRasa: 1,
         },
       ],
     },
@@ -39,18 +42,21 @@ const ListMenu = () => {
           image: require('../assets/images/panasS.png'),
           deskripsi: 'Paket Nasi + 2 Chicken (Ukuran 1/14)',
           harga: 17000,
+          maxRasa: 1,
         },
         {
           nama: 'Panas M',
           image: require('../assets/images/panasM.png'),
           deskripsi: 'Paket Nasi + 3 Chicken (Ukuran 1/14)',
           harga: 23000,
+          maxRasa: 1,
         },
         {
           nama: 'Panas L',
           image: require('../assets/images/panasL.png'),
           deskripsi: 'Paket Nasi + 4 Chicken (Ukuran 1/14)',
           harga: 29000,
+          maxRasa: 1,
         },
       ],
     },
@@ -75,6 +81,7 @@ const ListMenu = () => {
                     deskripsi={data.deskripsi}
                     harga={data.harga}
                     now={data.nama}
+                    maxRasa={data.maxRasa}
                     selected={selected}
                   />
                 </TouchableWithoutFeedback>
