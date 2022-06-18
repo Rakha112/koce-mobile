@@ -7,7 +7,7 @@ import Animated, {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
-import axios from 'axios';
+
 const Button = ({submit, text}) => {
   const {width} = useWindowDimensions();
   const scaleValue = useSharedValue(1);

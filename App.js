@@ -12,13 +12,16 @@ import SearchPage from './src/screen/SearchPage';
 import DetailedMenu from './src/screen/DetailedMenu';
 import SignUpPage from './src/screen/SignUpPage';
 import ToastComponent from './src/components/ToastComponent';
-// import LogIn from './src/screen/LogInPage';
+import LogIn from './src/screen/LogInPage';
 const App = () => {
   const Stack = createStackNavigator();
   const initialState = {
     bottomSheet: false,
+    login: false,
     rasa: 0,
     counter: 1,
+    accessToken: '',
+    refreshToken: '',
   };
   const rootReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -37,6 +40,16 @@ const App = () => {
           ...state,
           counter: action.payload,
         };
+      case 'ACCESSTOKEN':
+        return {
+          ...state,
+          accessToken: action.payload,
+        };
+      case 'REFRESHTOKEN':
+        return {
+          ...state,
+          refreshToken: action.payload,
+        };
       default:
         return state;
     }
@@ -52,7 +65,7 @@ const App = () => {
         />
         <NavigationContainer>
           <Stack.Navigator
-            initialRouteName="SignUp"
+            initialRouteName="LogIn"
             screenOptions={{
               headerShown: false,
               ...TransitionPresets.SlideFromRightIOS,
@@ -62,7 +75,7 @@ const App = () => {
             <Stack.Screen name="Search" component={SearchPage} />
             <Stack.Screen name="Detail" component={DetailedMenu} />
             <Stack.Screen name="SignUp" component={SignUpPage} />
-            {/* <Stack.Screen name="LogIn" component={LogIn} /> */}
+            <Stack.Screen name="LogIn" component={LogIn} />
           </Stack.Navigator>
         </NavigationContainer>
         <ToastComponent />

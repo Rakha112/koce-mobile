@@ -17,60 +17,105 @@ import VisibilityOff from '../assets/svg/visibilityOff.svg';
 import axios from 'axios';
 import Toast from 'react-native-toast-message';
 import {useNavigation} from '@react-navigation/native';
-const SignUpPage = () => {
+import EncryptedStorage from 'react-native-encrypted-storage';
+import {connect} from 'react-redux';
+const LogIn = ({setAccessToken, setRefreshToken}) => {
   const navigation = useNavigation();
   // State
   const {width, height} = useWindowDimensions();
   const [userInput, setUserInput] = useState(false);
   const [passInput, setPassInput] = useState(false);
-  const [ulangPassInput, setUlangPassInput] = useState(false);
   const [visibility, setVisibility] = useState(false);
-  const [visibilityUlang, setVisibilityUlang] = useState(false);
   const [userValue, setUserValue] = useState('');
   const [passValue, setPassValue] = useState('');
-  const [ulangPassValue, setUlangPassValue] = useState('');
   // Ref
   const userRef = useRef(null);
   const passwordRef = useRef(null);
-  const ulangPasswordRef = useRef(null);
+
   axios.defaults.withCredentials = true;
+
+  // React.useEffect(() => {
+  //   async function retrieveUserSession() {
+  //     try {
+  //       const session = await EncryptedStorage.getItem('user_session');
+
+  //       if (session !== undefined) {
+  //         // Congrats! You've just retrieved your first value!
+  //         console.log(JSON.parse(session));
+  //       }
+  //     } catch (error) {
+  //       // There was an error on the native side
+  //       console.log(error);
+  //     }
+  //   }
+  //   retrieveUserSession();
+  // }, []);
+  // function untuk store ke storage
+  const storeUserSession = async (accessToken, refreshToken, login) => {
+    try {
+      await EncryptedStorage.setItem(
+        'user_session',
+        JSON.stringify({
+          refreshToken: refreshToken,
+          accessToken: accessToken,
+          login: login,
+        }),
+      );
+    } catch (error) {
+      console.log(error);
+    }
+  };
   const submitHandle = () => {
-    if (userValue !== '' && passValue !== '' && ulangPassValue !== '') {
-      if (passValue === ulangPassValue) {
-        axios
-          .post('http://192.168.161.28:3001/signup', {
-            username: userValue,
-            password: passValue,
-          })
-          .then(response => {
-            if (response.data.alert === 1) {
-              Toast.show({
-                type: 'sukses',
-                text1: response.data.pesan,
-                visibilityTime: 2000,
-              });
-              // navigation.replace('Login');
-            } else if (response.data.alert === 2) {
-              Toast.show({
-                type: 'gagal',
-                text1: response.data.pesan,
-                visibilityTime: 2000,
-              });
-            } else {
-              Toast.show({
-                type: 'gagal',
-                text1: response.data.pesan,
-                visibilityTime: 2000,
-              });
-            }
-          });
-      } else {
-        Toast.show({
-          type: 'warning',
-          text1: 'Password tidak sama',
-          visibilityTime: 2000,
+    //Jika username dan password tidak kosong
+    if (userValue !== '' && passValue !== '') {
+      // login ke server
+      axios
+        .post('http://192.168.161.28:3001/login/mobile', {
+          username: userValue,
+          password: passValue,
+        })
+        .then(response => {
+          // Jika sukses
+          if (response.data.alert === 1) {
+            const accessToken = response.headers.authorization.split(' ')[1];
+            const refreshToken = response.headers.authorization.split(' ')[2];
+            console.log({accessToken});
+            console.log({refreshToken});
+            // Set accessToken dan refreshToken ke redux
+            setAccessToken(accessToken);
+            setRefreshToken(refreshToken);
+            // store storage
+            storeUserSession(
+              // AccessToken
+              accessToken,
+              // RefreshToken
+              refreshToken,
+              true,
+            );
+            Toast.show({
+              type: 'sukses',
+              text1: response.data.pesan,
+              visibilityTime: 2000,
+            });
+            navigation.reset({
+              index: 0,
+              routes: [{name: 'Home'}],
+            });
+          } else if (response.data.alert === 2) {
+            Toast.show({
+              type: 'warning',
+              text1: response.data.pesan,
+              visibilityTime: 2000,
+            });
+          } else {
+            Toast.show({
+              type: 'gagal',
+              text1: response.data.pesan,
+              visibilityTime: 2000,
+            });
+          }
         });
-      }
+      // Jika username dan password kosong
     } else {
       Toast.show({
         type: 'warning',
@@ -151,7 +196,7 @@ const SignUpPage = () => {
                 // visibility password kalo visibility true
                 secureTextEntry={visibility ? false : true}
                 // Ke input selanjutnya jika keyboard selesai
-                onSubmitEditing={() => ulangPasswordRef.current.focus()}
+                onSubmitEditing={() => submitHandle()}
               />
               <TouchableWithoutFeedback
                 containerStyle={{
@@ -171,66 +216,17 @@ const SignUpPage = () => {
                 )}
               </TouchableWithoutFeedback>
             </View>
-            <Text
-              style={[styles.text, {alignSelf: 'baseline', marginLeft: 30}]}>
-              ULANGI PASSWORD
-            </Text>
-            <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    width: (width * 90) / 100,
-                    borderColor: ulangPassInput ? '#FFA901' : 'black',
-                  },
-                ]}
-                ref={ulangPasswordRef}
-                autoCapitalize="none"
-                placeholder="Masukkan Password..."
-                // set border aktif
-                onFocus={() => {
-                  setUlangPassInput(true);
-                }}
-                // set border tidak aktif
-                onBlur={() => {
-                  setUlangPassInput(false);
-                }}
-                // set pass value
-                onChangeText={value => setUlangPassValue(value)}
-                // visibility password kalo visibility true
-                secureTextEntry={visibilityUlang ? false : true}
-                // submit jika sudah selesai
-                onSubmitEditing={() => submitHandle()}
-              />
-              <TouchableWithoutFeedback
-                containerStyle={{
-                  position: 'absolute',
-                  right: 10,
-                  alignSelf: 'center',
-                }}
-                onPress={() => {
-                  setVisibilityUlang(!visibilityUlang);
-                }}>
-                {visibilityUlang ? (
-                  // jika visibility on maka icon VisibilityOn
-                  <VisibilityOn width={30} height={30} fill={'grey'} />
-                ) : (
-                  // jika visibility off maka icon VisibilityOff
-                  <VisibilityOff width={30} height={30} fill={'grey'} />
-                )}
-              </TouchableWithoutFeedback>
-            </View>
           </View>
           <View style={styles.bawah}>
-            <Button text={'DAFTAR'} submit={submitHandle} />
+            <Button text={'MASUK'} submit={submitHandle} />
             <Text style={styles.text}>
               Sudah punya akun ? silahkan{' '}
               <Text
                 style={styles.span}
                 onPress={() => {
-                  navigation.navigate('LogIn');
+                  navigation.navigate('SignUp');
                 }}>
-                Masuk
+                Daftar
               </Text>{' '}
             </Text>
           </View>
@@ -240,7 +236,13 @@ const SignUpPage = () => {
   );
 };
 
-export default SignUpPage;
+const mapDispatchToProps = dispatch => {
+  return {
+    setAccessToken: data => dispatch({type: 'ACCESSTOKEN', payload: data}),
+    setRefreshToken: data => dispatch({type: 'REFRESHTOKEN', payload: data}),
+  };
+};
+export default connect(null, mapDispatchToProps)(LogIn);
 
 const styles = StyleSheet.create({
   container: {
