@@ -21,25 +21,6 @@ const CounterComp = ({counter, setCounter}) => {
   });
   return (
     <View style={styles.container}>
-      <Animated.View style={(styles.container, animatedStyles)}>
-        <TouchableWithoutFeedback
-          onPressIn={() => {
-            scaleValue.value = withTiming(0.9, {
-              duration: 500,
-              easing: Easing.out(Easing.exp),
-            });
-          }}
-          onPress={() => setCounter(counter + 1)}
-          onPressOut={() => {
-            scaleValue.value = withTiming(1, {
-              duration: 500,
-              easing: Easing.out(Easing.exp),
-            });
-          }}>
-          <PlusIcon width={36} height={36} />
-        </TouchableWithoutFeedback>
-      </Animated.View>
-      <Text style={styles.text}>{counter}</Text>
       <Animated.View style={(styles.container, animatedStyles2)}>
         <TouchableWithoutFeedback
           onPressIn={() => {
@@ -59,7 +40,30 @@ const CounterComp = ({counter, setCounter}) => {
               easing: Easing.out(Easing.exp),
             });
           }}>
-          <MinIcon width={36} height={36} />
+          <MinIcon
+            width={36}
+            height={36}
+            stroke={counter > 1 ? '#FFA901' : 'grey'}
+          />
+        </TouchableWithoutFeedback>
+      </Animated.View>
+      <Text style={styles.text}>{counter}</Text>
+      <Animated.View style={(styles.container, animatedStyles)}>
+        <TouchableWithoutFeedback
+          onPressIn={() => {
+            scaleValue.value = withTiming(0.9, {
+              duration: 500,
+              easing: Easing.out(Easing.exp),
+            });
+          }}
+          onPress={() => setCounter(counter + 1)}
+          onPressOut={() => {
+            scaleValue.value = withTiming(1, {
+              duration: 500,
+              easing: Easing.out(Easing.exp),
+            });
+          }}>
+          <PlusIcon width={36} height={36} />
         </TouchableWithoutFeedback>
       </Animated.View>
     </View>

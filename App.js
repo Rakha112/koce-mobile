@@ -10,6 +10,9 @@ import BottomTabNavigation from './src/components/BottomTabNavigation';
 import KeranjangPage from './src/screen/KeranjangPage';
 import SearchPage from './src/screen/SearchPage';
 import DetailedMenu from './src/screen/DetailedMenu';
+import SignUpPage from './src/screen/SignUpPage';
+import ToastComponent from './src/components/ToastComponent';
+// import LogIn from './src/screen/LogInPage';
 const App = () => {
   const Stack = createStackNavigator();
   const initialState = {
@@ -49,7 +52,7 @@ const App = () => {
         />
         <NavigationContainer>
           <Stack.Navigator
-            initialRouteName="Home"
+            initialRouteName="SignUp"
             screenOptions={{
               headerShown: false,
               ...TransitionPresets.SlideFromRightIOS,
@@ -58,8 +61,11 @@ const App = () => {
             <Stack.Screen name="Keranjang" component={KeranjangPage} />
             <Stack.Screen name="Search" component={SearchPage} />
             <Stack.Screen name="Detail" component={DetailedMenu} />
+            <Stack.Screen name="SignUp" component={SignUpPage} />
+            {/* <Stack.Screen name="LogIn" component={LogIn} /> */}
           </Stack.Navigator>
         </NavigationContainer>
+        <ToastComponent />
       </SafeAreaProvider>
     </Provider>
   );
