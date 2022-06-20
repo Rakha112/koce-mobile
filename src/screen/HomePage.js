@@ -18,6 +18,7 @@ import ListMenu from '../components/ListMenu';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axios from 'axios';
 const HomePage = () => {
+  axios.defaults.withCredentials = true;
   const navigation = useNavigation();
   // eslint-disable-next-line no-unused-vars
   const [refreshing, setRefreshing] = useState(false);
@@ -57,13 +58,13 @@ const HomePage = () => {
   const handleRefresh = () => {
     retrieveUserSession().then(res => {
       axios
-        .get('http://192.168.161.28:3001/profile', {
+        .get('http://192.168.146.218:3001/profile', {
           headers: {
             Authorization: `Bearer ${JSON.parse(res).accessToken} ${
               JSON.parse(res).refreshToken
             }`,
           },
-          params: {username: 'rakha'},
+          params: {username: JSON.parse(res).username},
         })
         .then(response => {
           console.log(response.data);

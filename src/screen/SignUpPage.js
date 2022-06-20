@@ -38,7 +38,7 @@ const SignUpPage = () => {
     if (userValue !== '' && passValue !== '' && ulangPassValue !== '') {
       if (passValue === ulangPassValue) {
         axios
-          .post('http://192.168.161.28:3001/signup', {
+          .post('http://192.168.11.149:3001/signup', {
             username: userValue,
             password: passValue,
           })

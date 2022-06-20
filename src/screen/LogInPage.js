@@ -51,7 +51,12 @@ const LogIn = ({setAccessToken, setRefreshToken}) => {
   //   retrieveUserSession();
   // }, []);
   // function untuk store ke storage
-  const storeUserSession = async (accessToken, refreshToken, login) => {
+  const storeUserSession = async (
+    accessToken,
+    refreshToken,
+    login,
+    username,
+  ) => {
     try {
       await EncryptedStorage.setItem(
         'user_session',
@@ -59,6 +64,7 @@ const LogIn = ({setAccessToken, setRefreshToken}) => {
           refreshToken: refreshToken,
           accessToken: accessToken,
           login: login,
+          username: username,
         }),
       );
     } catch (error) {
@@ -70,7 +76,7 @@ const LogIn = ({setAccessToken, setRefreshToken}) => {
     if (userValue !== '' && passValue !== '') {
       // login ke server
       axios
-        .post('http://192.168.161.28:3001/login/mobile', {
+        .post('http://192.168.11.149:3001/login/mobile', {
           username: userValue,
           password: passValue,
         })
@@ -91,6 +97,7 @@ const LogIn = ({setAccessToken, setRefreshToken}) => {
               // RefreshToken
               refreshToken,
               true,
+              userValue,
             );
             Toast.show({
               type: 'sukses',
