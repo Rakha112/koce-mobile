@@ -41,44 +41,8 @@ const HomePage = () => {
     retrieveUserSession();
   }, []);
 
-  const storeUserSession = async (accessToken, refreshToken, login) => {
-    try {
-      await EncryptedStorage.setItem(
-        'user_session',
-        JSON.stringify({
-          refreshToken: refreshToken,
-          accessToken: accessToken,
-          login: login,
-        }),
-      );
-    } catch (error) {
-      console.log(error);
-    }
-  };
   const handleRefresh = () => {
-    retrieveUserSession().then(res => {
-      axios
-        .get('http://192.168.146.218:3001/profile', {
-          headers: {
-            Authorization: `Bearer ${JSON.parse(res).accessToken} ${
-              JSON.parse(res).refreshToken
-            }`,
-          },
-          params: {username: JSON.parse(res).username},
-        })
-        .then(response => {
-          console.log(response.data);
-          // jika header tidak undefined
-          if (response.headers.authorization !== undefined) {
-            // set storage untuk access token Baru
-            storeUserSession(
-              response.headers.authorization.split(' ')[1],
-              JSON.parse(res).refreshToken,
-              true,
-            );
-          }
-        });
-    });
+    console.log('REFRESH');
   };
 
   return (

@@ -1,20 +1,15 @@
-import {StyleSheet, Text, StatusBar} from 'react-native';
+import {StyleSheet, Text} from 'react-native';
 import React from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
-const TransaksiPage = () => {
+const TransaksiSelesaiPage = () => {
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar
-        backgroundColor="white"
-        translucent={true}
-        barStyle="dark-content"
-      />
       <Text style={styles.text}>Belum ada transaksi...</Text>
     </SafeAreaView>
   );
 };
 
-export default TransaksiPage;
+export default TransaksiSelesaiPage;
 
 const styles = StyleSheet.create({
   container: {

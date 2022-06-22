@@ -34,22 +34,6 @@ const LogIn = ({setAccessToken, setRefreshToken}) => {
 
   axios.defaults.withCredentials = true;
 
-  // React.useEffect(() => {
-  //   async function retrieveUserSession() {
-  //     try {
-  //       const session = await EncryptedStorage.getItem('user_session');
-
-  //       if (session !== undefined) {
-  //         // Congrats! You've just retrieved your first value!
-  //         console.log(JSON.parse(session));
-  //       }
-  //     } catch (error) {
-  //       // There was an error on the native side
-  //       console.log(error);
-  //     }
-  //   }
-  //   retrieveUserSession();
-  // }, []);
   // function untuk store ke storage
   const storeUserSession = async (
     accessToken,

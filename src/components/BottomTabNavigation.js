@@ -10,7 +10,8 @@ import AkunIcon from '../assets/svg/AkunIcon.svg';
 import NotaIcon from '../assets/svg/NotaIcon.svg';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import TransaksiPage from '../screen/TransaksiPage';
+import MaterialTopTabsNavigator from './MaterialTopTabsNavigator';
+
 const BottomTabNavigation = () => {
   const Tab = createBottomTabNavigator();
 
@@ -71,7 +72,7 @@ const BottomTabNavigation = () => {
       />
       <Tab.Screen
         name="Transaksi"
-        component={TransaksiPage}
+        component={MaterialTopTabsNavigator}
         options={{
           tabBarIcon: ({focused}) => (
             <NotaIcon

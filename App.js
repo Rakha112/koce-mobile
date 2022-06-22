@@ -15,6 +15,7 @@ import ToastComponent from './src/components/ToastComponent';
 import LogIn from './src/screen/LogInPage';
 import SplashScreen from 'react-native-splash-screen';
 import {axiosAuth} from './src/services/axiosAuth';
+import EncryptedStorage from 'react-native-encrypted-storage';
 const App = () => {
   const Stack = createStackNavigator();
   const [loading, setLoading] = useState(false);
@@ -23,15 +24,27 @@ const App = () => {
   // Get user LOGIN
   useEffect(() => {
     if (!loading) {
-      axiosAuth.get('http://192.168.11.149:3001/profile').then(res => {
-        if (res.data.loggedIn) {
-          setLogin(true);
-          setLoading(true);
-        } else {
+      axiosAuth
+        .get('http://192.168.11.149:3001/profile')
+        .then(res => {
+          if (res.data.loggedIn) {
+            setLogin(true);
+            setTimeout(() => {
+              setLoading(true);
+            }, 500);
+          } else {
+            console.log(3);
+            setTimeout(() => {
+              setLoading(true);
+            }, 500);
+            setLogin(false);
+          }
+        })
+        .catch(() => {
           setLogin(false);
           setLoading(true);
-        }
-      });
+          // EncryptedStorage.removeItem('user_session');
+        });
     } else {
       SplashScreen.hide();
     }
@@ -104,6 +117,7 @@ const App = () => {
                 <Stack.Screen name="LogIn" component={LogIn} />
                 <Stack.Screen name="SignUp" component={SignUpPage} />
                 <Stack.Screen name="Home" component={BottomTabNavigation} />
+                <Stack.Screen name="Detail" component={DetailedMenu} />
               </>
             )}
           </Stack.Navigator>
