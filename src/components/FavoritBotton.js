@@ -1,5 +1,5 @@
 import {StyleSheet} from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import FavoritIcon from '../assets/svg/FavoriteIcon.svg';
 import Animated, {
@@ -8,12 +8,39 @@ import Animated, {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
-const FavoritBotton = () => {
+import axios from 'axios';
+const FavoritBotton = ({judul, deskripsi, harga}) => {
+  axios.defaults.withCredentials = true;
   const [favorit, setFavorit] = useState(false);
+  const [load, setLoad] = useState(false);
   const scaleValue = useSharedValue(1);
   const animatedStyles = useAnimatedStyle(() => {
     return {transform: [{scale: scaleValue.value}]};
   });
+
+  useEffect(() => {
+    if (!load) {
+      axios
+        .get('https://server-koce.herokuapp.com/favorit/get', {
+          params: {
+            makanan: judul,
+          },
+        })
+        .then(res => {
+          if (res.data.status === 1) {
+            setLoad(true);
+            setFavorit(true);
+          }
+        })
+        .catch(err => {
+          if (err.response.data.status === 2) {
+            setLoad(true);
+            setFavorit(false);
+          }
+        });
+    }
+  }, [judul, load]);
+
   return (
     <TouchableWithoutFeedback
       onPressIn={() => {
@@ -24,9 +51,37 @@ const FavoritBotton = () => {
       }}
       onPress={() => {
         if (favorit) {
-          setFavorit(false);
+          console.log(1);
+          axios
+            .delete('https://server-koce.herokuapp.com/favorit/delete', {
+              data: {
+                makanan: judul,
+              },
+            })
+            .then(res => {
+              console.log(2);
+              console.log(res.data);
+              setFavorit(false);
+            })
+            .catch(err => {
+              console.log(3);
+              console.log(err.response.data);
+            });
         } else {
-          setFavorit(true);
+          axios
+            .post('https://server-koce.herokuapp.com/favorit', {
+              nomor_hp: '+62811223322112',
+              makanan: judul,
+              deskripsi: deskripsi,
+              harga: harga,
+            })
+            .then(res => {
+              console.log(res.data);
+              setFavorit(true);
+            })
+            .catch(err => {
+              console.log(err.response.data);
+            });
         }
       }}
       onPressOut={() => {

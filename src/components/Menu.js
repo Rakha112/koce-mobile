@@ -78,7 +78,11 @@ const Menu = ({judul, image, now, selected, deskripsi, harga, maxRasa}) => {
                 justifyContent: 'center',
                 alignItems: 'center',
               }}>
-              <FavoritBotton />
+              <FavoritBotton
+                judul={judul}
+                deskripsi={deskripsi}
+                harga={harga}
+              />
             </View>
           </View>
         </View>

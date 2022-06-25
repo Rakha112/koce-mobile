@@ -52,7 +52,7 @@ const LogIn = () => {
       if (checkValid) {
         // check ke database nomor HP terdaftar atau tidak
         axios
-          .post('http://192.168.11.149:3001/login/mobile', {
+          .post('https://server-koce.herokuapp.com/login/mobile', {
             nomorhp: noHpValue,
           })
           .then(res => {

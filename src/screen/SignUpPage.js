@@ -51,7 +51,7 @@ const SignUpPage = () => {
       if (emailValidate) {
         if (checkValid) {
           axios
-            .post('http://192.168.11.149:3001/signup', {
+            .post('https://server-koce.herokuapp.com/signup', {
               nohp: noHpValue,
               email: emailValue,
               nama: namaValue,

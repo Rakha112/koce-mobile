@@ -1,4 +1,5 @@
-import {StyleSheet, Text, useWindowDimensions} from 'react-native';
+/* eslint-disable react-native/no-inline-styles */
+import {StyleSheet, Text, useWindowDimensions, View} from 'react-native';
 import React from 'react';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import Animated, {
@@ -7,36 +8,65 @@ import Animated, {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
-const AddButton = () => {
+import {connect} from 'react-redux';
+import Toast from 'react-native-toast-message';
+const AddButton = ({maxRasa, rasa}) => {
   const {width} = useWindowDimensions();
   const scaleValue = useSharedValue(1);
   const animatedStyles = useAnimatedStyle(() => {
     return {transform: [{scale: scaleValue.value}]};
   });
+  // Jika rasa yang dipilih xama maksRasa (rasa yang dibutuhkan)
+  if (rasa === maxRasa) {
+    return (
+      <Animated.View
+        style={[styles.container, animatedStyles, {width: width * 0.9}]}>
+        <TouchableWithoutFeedback
+          style={[styles.button, {width: width * 0.9}]}
+          onPressIn={() => {
+            scaleValue.value = withTiming(0.9, {
+              duration: 500,
+              easing: Easing.out(Easing.exp),
+            });
+          }}
+          onPress={() => {
+            console.log(maxRasa);
+            console.log(rasa);
+          }}
+          onPressOut={() => {
+            scaleValue.value = withTiming(1, {
+              duration: 500,
+              easing: Easing.out(Easing.exp),
+            });
+          }}>
+          <Text style={styles.text}>Add</Text>
+        </TouchableWithoutFeedback>
+      </Animated.View>
+    );
+  }
+  // Jika rasa yang dipilih kurang maksRasa (rasa yang dibutuhkan)
   return (
-    <Animated.View style={[styles.container, animatedStyles, {width: width}]}>
+    <View style={[styles.container, {width: width * 0.9}]}>
       <TouchableWithoutFeedback
-        style={[styles.button, {width: width * 0.9}]}
-        onPressIn={() => {
-          scaleValue.value = withTiming(0.9, {
-            duration: 500,
-            easing: Easing.out(Easing.exp),
+        onPress={() => {
+          Toast.show({
+            type: 'warning',
+            text1: 'Pilih rasa terlebih dahulu',
+            visibilityTime: 2000,
           });
         }}
-        onPress={() => console.log('PRESS')}
-        onPressOut={() => {
-          scaleValue.value = withTiming(1, {
-            duration: 500,
-            easing: Easing.out(Easing.exp),
-          });
-        }}>
+        style={[styles.button, {width: width * 0.9, backgroundColor: 'grey'}]}>
         <Text style={styles.text}>Add</Text>
       </TouchableWithoutFeedback>
-    </Animated.View>
+    </View>
   );
 };
-
-export default AddButton;
+const mapStateToProps = state => {
+  return {
+    rasa: state.rasa,
+  };
+};
+export default connect(mapStateToProps)(AddButton);
 
 const styles = StyleSheet.create({
   container: {
@@ -54,6 +84,5 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderRadius: 50,
-    marginBottom: 10,
   },
 });
