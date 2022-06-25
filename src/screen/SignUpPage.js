@@ -1,3 +1,4 @@
+/* eslint-disable no-useless-escape */
 /* eslint-disable react-native/no-inline-styles */
 import {
   StyleSheet,
@@ -9,72 +10,92 @@ import {
 } from 'react-native';
 import React, {useState, useRef} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import Button from '../components/Button';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import VisibilityOn from '../assets/svg/visibilityOn.svg';
-import VisibilityOff from '../assets/svg/visibilityOff.svg';
 import axios from 'axios';
 import Toast from 'react-native-toast-message';
 import {useNavigation} from '@react-navigation/native';
+import PhoneInput from 'react-native-phone-number-input';
+
 const SignUpPage = () => {
   const navigation = useNavigation();
   // State
   const {width, height} = useWindowDimensions();
-  const [userInput, setUserInput] = useState(false);
-  const [passInput, setPassInput] = useState(false);
-  const [ulangPassInput, setUlangPassInput] = useState(false);
-  const [visibility, setVisibility] = useState(false);
-  const [visibilityUlang, setVisibilityUlang] = useState(false);
-  const [userValue, setUserValue] = useState('');
-  const [passValue, setPassValue] = useState('');
-  const [ulangPassValue, setUlangPassValue] = useState('');
+  const [namaInput, setNamaInput] = useState(false);
+  const [emailInput, setEmailInput] = useState(false);
+  const [emailValidate, setEmailValidate] = useState(false);
+  const [noHpInput, setNoHpInput] = useState(false);
+  const [namaValue, setNamaValue] = useState('');
+  const [emailValue, setEmailValue] = useState('');
+  const [noHpValue, setNoHpValue] = useState('');
+
   // Ref
-  const userRef = useRef(null);
-  const passwordRef = useRef(null);
-  const ulangPasswordRef = useRef(null);
+  const namaRef = useRef(null);
+  const emailRef = useRef(null);
+  const noHpRef = useRef(null);
+  const validate = text => {
+    let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
+    if (reg.test(text) === false) {
+      setEmailValidate(false);
+      setEmailValue(text);
+      return false;
+    } else {
+      setEmailValidate(true);
+      setEmailValue(text);
+    }
+  };
   axios.defaults.withCredentials = true;
   const submitHandle = () => {
-    if (userValue !== '' && passValue !== '' && ulangPassValue !== '') {
-      if (passValue === ulangPassValue) {
-        axios
-          .post('http://192.168.11.149:3001/signup', {
-            username: userValue,
-            password: passValue,
-          })
-          .then(response => {
-            if (response.data.alert === 1) {
-              Toast.show({
-                type: 'sukses',
-                text1: response.data.pesan,
-                visibilityTime: 2000,
-              });
-              // navigation.replace('Login');
-            } else if (response.data.alert === 2) {
-              Toast.show({
-                type: 'gagal',
-                text1: response.data.pesan,
-                visibilityTime: 2000,
-              });
-            } else {
-              Toast.show({
-                type: 'gagal',
-                text1: response.data.pesan,
-                visibilityTime: 2000,
-              });
-            }
+    const checkValid = noHpRef.current?.isValidNumber(noHpValue);
+    if (namaValue !== '' && emailValue !== '' && noHpValue !== '') {
+      if (emailValidate) {
+        if (checkValid) {
+          axios
+            .post('http://192.168.11.149:3001/signup', {
+              nohp: noHpValue,
+              email: emailValue,
+              nama: namaValue,
+            })
+            .then(response => {
+              if (response.data.alert === 1) {
+                Toast.show({
+                  type: 'sukses',
+                  text1: response.data.pesan,
+                  visibilityTime: 2000,
+                });
+                // navigation.replace('Login');
+              } else if (response.data.alert === 2) {
+                Toast.show({
+                  type: 'gagal',
+                  text1: response.data.pesan,
+                  visibilityTime: 2000,
+                });
+              } else {
+                Toast.show({
+                  type: 'gagal',
+                  text1: response.data.pesan,
+                  visibilityTime: 2000,
+                });
+              }
+            });
+        } else {
+          Toast.show({
+            type: 'warning',
+            text1: 'Nomor Hp tidak valid',
+            visibilityTime: 2000,
           });
+        }
       } else {
         Toast.show({
           type: 'warning',
-          text1: 'Password tidak sama',
+          text1: 'Email salah, Harap periksa kembali',
           visibilityTime: 2000,
         });
       }
     } else {
       Toast.show({
         type: 'warning',
-        text1: 'Username dan password tidak boleh kosong',
+        text1: 'Form tidak boleh kosong',
         visibilityTime: 2000,
       });
     }
@@ -93,132 +114,118 @@ const SignUpPage = () => {
             />
           </View>
           <View style={styles.form}>
-            <TextInput />
-            <Text
-              style={[styles.text, {alignSelf: 'baseline', marginLeft: 30}]}>
-              USERNAME
-            </Text>
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  width: (width * 90) / 100,
-                  borderColor: userInput ? '#FFA901' : 'black',
-                },
-              ]}
-              ref={userRef}
-              autoCapitalize="none"
-              placeholder="Masukkan Username..."
-              // set border aktif
-              onFocus={() => {
-                setUserInput(true);
-              }}
-              // set border tidak aktif
-              onBlur={() => {
-                setUserInput(false);
-              }}
-              // set value dari input ke state userValue
-              onChangeText={value => setUserValue(value)}
-              // Ke input selanjutnya jika keyboard selesai
-              onSubmitEditing={() => passwordRef.current.focus()}
-            />
-            <Text
-              style={[styles.text, {alignSelf: 'baseline', marginLeft: 30}]}>
-              PASSWORD
-            </Text>
-            <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    width: (width * 90) / 100,
-                    borderColor: passInput ? '#FFA901' : 'black',
-                  },
+            {/* Nomor HP input field */}
+            <View>
+              <Text
+                style={[styles.text, {alignSelf: 'baseline', marginLeft: 10}]}>
+                Nomor HP
+              </Text>
+              <PhoneInput
+                ref={noHpRef}
+                // autoFocus={true}
+                // Container Style
+                containerStyle={[
+                  styles.phoneInputContainer,
+                  {width: (width * 90) / 100},
                 ]}
-                ref={passwordRef}
-                autoCapitalize="none"
-                placeholder="Masukkan Password..."
-                // set border aktif
-                onFocus={() => {
-                  setPassInput(true);
+                // Text Container Style
+                textContainerStyle={[
+                  styles.phoneInputTextContainer,
+                  {borderColor: noHpInput ? '#FFA901' : 'black'},
+                ]}
+                // flag style
+                flagButtonStyle={[
+                  styles.phoneInputFlagStyle,
+                  {borderColor: noHpInput ? '#FFA901' : 'black'},
+                ]}
+                // +62 style
+                codeTextStyle={{marginHorizontal: 10}}
+                // Text input props seperti onFocus, onBlur
+                textInputProps={{
+                  onFocus: () => {
+                    setNoHpInput(true);
+                  },
+                  onBlur: () => {
+                    setNoHpInput(false);
+                  },
+                  onSubmitEditing: () => namaRef.current.focus(),
                 }}
-                // set border tidak aktif
-                onBlur={() => {
-                  setPassInput(false);
+                defaultCode="ID"
+                layout="first"
+                onChangeFormattedText={text => {
+                  setNoHpValue(text);
                 }}
-                // set pass value
-                onChangeText={value => setPassValue(value)}
-                // visibility password kalo visibility true
-                secureTextEntry={visibility ? false : true}
-                // Ke input selanjutnya jika keyboard selesai
-                onSubmitEditing={() => ulangPasswordRef.current.focus()}
               />
-              <TouchableWithoutFeedback
-                containerStyle={{
-                  position: 'absolute',
-                  right: 10,
-                  alignSelf: 'center',
-                }}
-                onPress={() => {
-                  setVisibility(!visibility);
-                }}>
-                {visibility ? (
-                  // jika visibility on maka icon VisibilityOn
-                  <VisibilityOn width={30} height={30} fill={'grey'} />
-                ) : (
-                  // jika visibility off maka icon VisibilityOff
-                  <VisibilityOff width={30} height={30} fill={'grey'} />
-                )}
-              </TouchableWithoutFeedback>
             </View>
-            <Text
-              style={[styles.text, {alignSelf: 'baseline', marginLeft: 30}]}>
-              ULANGI PASSWORD
-            </Text>
-            <View style={{flexDirection: 'row', justifyContent: 'center'}}>
+            {/* Nama input field */}
+            <View>
+              <Text
+                style={[styles.text, {alignSelf: 'baseline', marginLeft: 10}]}>
+                Nama
+              </Text>
               <TextInput
                 style={[
                   styles.input,
                   {
                     width: (width * 90) / 100,
-                    borderColor: ulangPassInput ? '#FFA901' : 'black',
+                    borderColor: namaInput ? '#FFA901' : 'black',
                   },
                 ]}
-                ref={ulangPasswordRef}
+                ref={namaRef}
                 autoCapitalize="none"
-                placeholder="Masukkan Password..."
+                placeholder="Masukkan Nama Anda..."
                 // set border aktif
                 onFocus={() => {
-                  setUlangPassInput(true);
+                  setNamaInput(true);
                 }}
                 // set border tidak aktif
                 onBlur={() => {
-                  setUlangPassInput(false);
+                  setNamaInput(false);
                 }}
-                // set pass value
-                onChangeText={value => setUlangPassValue(value)}
-                // visibility password kalo visibility true
-                secureTextEntry={visibilityUlang ? false : true}
-                // submit jika sudah selesai
-                onSubmitEditing={() => submitHandle()}
+                // set value dari input ke state NamaValue
+                onChangeText={value => setNamaValue(value)}
+                // Ke input selanjutnya jika keyboard selesai
+                onSubmitEditing={() => emailRef.current.focus()}
+                autoComplete="name"
+                textContentType="name"
               />
-              <TouchableWithoutFeedback
-                containerStyle={{
-                  position: 'absolute',
-                  right: 10,
-                  alignSelf: 'center',
+            </View>
+            {/* Email input field */}
+            <View>
+              <Text
+                style={[styles.text, {alignSelf: 'baseline', marginLeft: 10}]}>
+                Email
+              </Text>
+              <TextInput
+                style={[
+                  styles.input,
+                  {
+                    width: (width * 90) / 100,
+                    borderColor: emailInput
+                      ? emailValidate
+                        ? '#FFA901'
+                        : 'red'
+                      : 'black',
+                  },
+                ]}
+                ref={emailRef}
+                autoCapitalize="none"
+                placeholder="Masukkan Email Anda..."
+                // set border aktif
+                onFocus={() => {
+                  setEmailInput(true);
                 }}
-                onPress={() => {
-                  setVisibilityUlang(!visibilityUlang);
-                }}>
-                {visibilityUlang ? (
-                  // jika visibility on maka icon VisibilityOn
-                  <VisibilityOn width={30} height={30} fill={'grey'} />
-                ) : (
-                  // jika visibility off maka icon VisibilityOff
-                  <VisibilityOff width={30} height={30} fill={'grey'} />
-                )}
-              </TouchableWithoutFeedback>
+                // set border tidak aktif
+                onBlur={() => {
+                  setEmailInput(false);
+                }}
+                // set value dari input ke state EmailValue
+                onChangeText={value => validate(value)}
+                // Ke input selanjutnya jika keyboard selesai
+                onSubmitEditing={() => submitHandle()}
+                autoComplete="email"
+                textContentType="emailAddress"
+              />
             </View>
           </View>
           <View style={styles.bawah}>
@@ -275,8 +282,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   form: {
-    // marginTop: 200,
+    marginTop: 'auto',
     marginBottom: 'auto',
     alignItems: 'center',
+  },
+  phoneInputContainer: {
+    marginBottom: 10,
+    marginTop: 10,
+    paddingLeft: 0,
+  },
+  phoneInputTextContainer: {
+    backgroundColor: 'white',
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    borderBottomRightRadius: 20,
+    borderTopRightRadius: 20,
+    borderRightWidth: 1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+  },
+  phoneInputFlagStyle: {
+    backgroundColor: 'white',
+    borderBottomLeftRadius: 20,
+    borderTopLeftRadius: 20,
+    borderLeftWidth: 1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
   },
 });

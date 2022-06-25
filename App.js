@@ -15,19 +15,28 @@ import ToastComponent from './src/components/ToastComponent';
 import LogIn from './src/screen/LogInPage';
 import SplashScreen from 'react-native-splash-screen';
 import {axiosAuth} from './src/services/axiosAuth';
-import EncryptedStorage from 'react-native-encrypted-storage';
+import OTPPage from './src/screen/OTPPage';
+
 const App = () => {
   const Stack = createStackNavigator();
   const [loading, setLoading] = useState(false);
   const [login, setLogin] = useState(false);
+  // useEffect(() => {
+  //   SplashScreen.hide();
+  // }, []);
 
   // Get user LOGIN
   useEffect(() => {
+    console.log('INIT');
     if (!loading) {
+      console.log('HALOO');
       axiosAuth
         .get('http://192.168.11.149:3001/profile')
         .then(res => {
+          console.log(1);
+          console.log(res.data);
           if (res.data.loggedIn) {
+            console.log(2);
             setLogin(true);
             setTimeout(() => {
               setLoading(true);
@@ -41,6 +50,7 @@ const App = () => {
           }
         })
         .catch(() => {
+          console.log(4);
           setLogin(false);
           setLoading(true);
           // EncryptedStorage.removeItem('user_session');
@@ -100,11 +110,18 @@ const App = () => {
         />
         <NavigationContainer>
           <Stack.Navigator
-            // initialRouteName="Detail"
+            // initialRouteName={'OTP'}
             screenOptions={{
               headerShown: false,
               ...TransitionPresets.SlideFromRightIOS,
             }}>
+            {/* <Stack.Screen name="Home" component={BottomTabNavigation} />
+            <Stack.Screen name="Keranjang" component={KeranjangPage} />
+            <Stack.Screen name="Search" component={SearchPage} />
+            <Stack.Screen name="Detail" component={DetailedMenu} />
+            <Stack.Screen name="LogIn" component={LogIn} />
+            <Stack.Screen name="SignUp" component={SignUpPage} /> */}
+
             {login ? (
               <>
                 <Stack.Screen name="Home" component={BottomTabNavigation} />
@@ -114,8 +131,9 @@ const App = () => {
               </>
             ) : (
               <>
-                <Stack.Screen name="LogIn" component={LogIn} />
                 <Stack.Screen name="SignUp" component={SignUpPage} />
+                <Stack.Screen name="LogIn" component={LogIn} />
+                <Stack.Screen name="OTP" component={OTPPage} />
                 <Stack.Screen name="Home" component={BottomTabNavigation} />
                 <Stack.Screen name="Detail" component={DetailedMenu} />
               </>

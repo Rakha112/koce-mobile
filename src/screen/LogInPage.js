@@ -1,37 +1,23 @@
 /* eslint-disable react-native/no-inline-styles */
-import {
-  StyleSheet,
-  Text,
-  View,
-  TextInput,
-  useWindowDimensions,
-  Image,
-} from 'react-native';
+import {StyleSheet, Text, View, useWindowDimensions, Image} from 'react-native';
 import React, {useState, useRef} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import Button from '../components/Button';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import VisibilityOn from '../assets/svg/visibilityOn.svg';
-import VisibilityOff from '../assets/svg/visibilityOff.svg';
 import axios from 'axios';
 import Toast from 'react-native-toast-message';
 import {useNavigation} from '@react-navigation/native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {connect} from 'react-redux';
+import PhoneInput from 'react-native-phone-number-input';
 const LogIn = ({setAccessToken, setRefreshToken}) => {
   const navigation = useNavigation();
-  // State
   const {width, height} = useWindowDimensions();
-  const [userInput, setUserInput] = useState(false);
-  const [passInput, setPassInput] = useState(false);
-  const [visibility, setVisibility] = useState(false);
-  const [userValue, setUserValue] = useState('');
-  const [passValue, setPassValue] = useState('');
+  // State
+  const [noHpInput, setNoHpInput] = useState(false);
+  const [noHpValue, setNoHpValue] = useState('');
   // Ref
-  const userRef = useRef(null);
-  const passwordRef = useRef(null);
-
+  const noHpRef = useRef(null);
   axios.defaults.withCredentials = true;
 
   // function untuk store ke storage
@@ -56,61 +42,23 @@ const LogIn = ({setAccessToken, setRefreshToken}) => {
     }
   };
   const submitHandle = () => {
+    const checkValid = noHpRef.current?.isValidNumber(noHpValue);
     //Jika username dan password tidak kosong
-    if (userValue !== '' && passValue !== '') {
+    if (noHpValue !== '') {
       // login ke server
-      axios
-        .post('http://192.168.11.149:3001/login/mobile', {
-          username: userValue,
-          password: passValue,
-        })
-        .then(response => {
-          // Jika sukses
-          if (response.data.alert === 1) {
-            const accessToken = response.headers.authorization.split(' ')[1];
-            const refreshToken = response.headers.authorization.split(' ')[2];
-            console.log({accessToken});
-            console.log({refreshToken});
-            // Set accessToken dan refreshToken ke redux
-            setAccessToken(accessToken);
-            setRefreshToken(refreshToken);
-            // store storage
-            storeUserSession(
-              // AccessToken
-              accessToken,
-              // RefreshToken
-              refreshToken,
-              true,
-              userValue,
-            );
-            Toast.show({
-              type: 'sukses',
-              text1: response.data.pesan,
-              visibilityTime: 2000,
-            });
-            navigation.reset({
-              index: 0,
-              routes: [{name: 'Home'}],
-            });
-          } else if (response.data.alert === 2) {
-            Toast.show({
-              type: 'warning',
-              text1: response.data.pesan,
-              visibilityTime: 2000,
-            });
-          } else {
-            Toast.show({
-              type: 'gagal',
-              text1: response.data.pesan,
-              visibilityTime: 2000,
-            });
-          }
+      if (checkValid) {
+        navigation.navigate('OTP');
+      } else {
+        Toast.show({
+          type: 'warning',
+          text1: 'Nomor HP tidak valid',
+          visibilityTime: 2000,
         });
-      // Jika username dan password kosong
+      }
     } else {
       Toast.show({
         type: 'warning',
-        text1: 'Username dan password tidak boleh kosong',
+        text1: 'Nomor HP tidak boleh kosong',
         visibilityTime: 2000,
       });
     }
@@ -129,83 +77,47 @@ const LogIn = ({setAccessToken, setRefreshToken}) => {
             />
           </View>
           <View style={styles.form}>
-            <TextInput />
-            <Text
-              style={[styles.text, {alignSelf: 'baseline', marginLeft: 30}]}>
-              USERNAME
-            </Text>
-            <TextInput
-              style={[
-                styles.input,
-                {
-                  width: (width * 90) / 100,
-                  borderColor: userInput ? '#FFA901' : 'black',
-                },
-              ]}
-              ref={userRef}
-              autoCapitalize="none"
-              placeholder="Masukkan Username..."
-              // set border aktif
-              onFocus={() => {
-                setUserInput(true);
-              }}
-              // set border tidak aktif
-              onBlur={() => {
-                setUserInput(false);
-              }}
-              // set value dari input ke state userValue
-              onChangeText={value => setUserValue(value)}
-              // Ke input selanjutnya jika keyboard selesai
-              onSubmitEditing={() => passwordRef.current.focus()}
-            />
-            <Text
-              style={[styles.text, {alignSelf: 'baseline', marginLeft: 30}]}>
-              PASSWORD
-            </Text>
-            <View style={{flexDirection: 'row', justifyContent: 'center'}}>
-              <TextInput
-                style={[
-                  styles.input,
-                  {
-                    width: (width * 90) / 100,
-                    borderColor: passInput ? '#FFA901' : 'black',
-                  },
+            <View>
+              <Text
+                style={[styles.text, {alignSelf: 'baseline', marginLeft: 10}]}>
+                Nomor HP
+              </Text>
+              <PhoneInput
+                ref={noHpRef}
+                // autoFocus={true}
+                // Container Style
+                containerStyle={[
+                  styles.phoneInputContainer,
+                  {width: (width * 90) / 100},
                 ]}
-                ref={passwordRef}
-                autoCapitalize="none"
-                placeholder="Masukkan Password..."
-                // set border aktif
-                onFocus={() => {
-                  setPassInput(true);
+                // Text Container Style
+                textContainerStyle={[
+                  styles.phoneInputTextContainer,
+                  {borderColor: noHpInput ? '#FFA901' : 'black'},
+                ]}
+                // flag style
+                flagButtonStyle={[
+                  styles.phoneInputFlagStyle,
+                  {borderColor: noHpInput ? '#FFA901' : 'black'},
+                ]}
+                // +62 style
+                codeTextStyle={{marginHorizontal: 10}}
+                // Text input props seperti onFocus, onBlur
+                textInputProps={{
+                  onFocus: () => {
+                    setNoHpInput(true);
+                  },
+                  onBlur: () => {
+                    setNoHpInput(false);
+                  },
+                  onSubmitEditing: () => submitHandle(),
                 }}
-                // set border tidak aktif
-                onBlur={() => {
-                  setPassInput(false);
+                defaultCode="ID"
+                layout="first"
+                onChangeFormattedText={text => {
+                  setNoHpValue(text);
                 }}
-                // set pass value
-                onChangeText={value => setPassValue(value)}
-                // visibility password kalo visibility true
-                secureTextEntry={visibility ? false : true}
-                // Ke input selanjutnya jika keyboard selesai
-                onSubmitEditing={() => submitHandle()}
               />
-              <TouchableWithoutFeedback
-                containerStyle={{
-                  position: 'absolute',
-                  right: 10,
-                  alignSelf: 'center',
-                }}
-                onPress={() => {
-                  setVisibility(!visibility);
-                }}>
-                {visibility ? (
-                  // jika visibility on maka icon VisibilityOn
-                  <VisibilityOn width={30} height={30} fill={'grey'} />
-                ) : (
-                  // jika visibility off maka icon VisibilityOff
-                  <VisibilityOff width={30} height={30} fill={'grey'} />
-                )}
-              </TouchableWithoutFeedback>
             </View>
           </View>
           <View style={styles.bawah}>
@@ -268,8 +180,31 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   form: {
-    // marginTop: 200,
+    marginTop: 40,
     marginBottom: 'auto',
     alignItems: 'center',
+  },
+  phoneInputContainer: {
+    marginBottom: 10,
+    marginTop: 10,
+    paddingLeft: 0,
+  },
+  phoneInputTextContainer: {
+    backgroundColor: 'white',
+    paddingHorizontal: 0,
+    paddingVertical: 0,
+    borderBottomRightRadius: 20,
+    borderTopRightRadius: 20,
+    borderRightWidth: 1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
+  },
+  phoneInputFlagStyle: {
+    backgroundColor: 'white',
+    borderBottomLeftRadius: 20,
+    borderTopLeftRadius: 20,
+    borderLeftWidth: 1,
+    borderTopWidth: 1,
+    borderBottomWidth: 1,
   },
 });
