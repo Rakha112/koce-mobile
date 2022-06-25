@@ -6,7 +6,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Button from '../components/Button';
 import OTP from '../components/OTP';
 import {connect} from 'react-redux';
-const OTPPage = ({confirm, OTPcode}) => {
+const OTPPage = ({confirm, OTPcode, nomorhp}) => {
   // const {data} = route.params;
   const {height} = useWindowDimensions();
   const submitHandle = async () => {
@@ -47,7 +47,7 @@ const OTPPage = ({confirm, OTPcode}) => {
               fontFamily: 'Inter-regular',
               fontSize: 14,
             }}>
-            Terkirim ke nomor +6281229284274
+            Terkirim ke nomor {nomorhp}
           </Text>
           <OTP />
           <Button text={'SUBMIT'} submit={submitHandle} />

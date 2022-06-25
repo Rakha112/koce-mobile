@@ -8,7 +8,6 @@ import axios from 'axios';
 import Toast from 'react-native-toast-message';
 import {useNavigation} from '@react-navigation/native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import {connect} from 'react-redux';
 import PhoneInput from 'react-native-phone-number-input';
 import auth from '@react-native-firebase/auth';
 import OTPPage from './OTPPage';
@@ -49,13 +48,43 @@ const LogIn = () => {
     const checkValid = noHpRef.current.isValidNumber(noHpValue);
     //Jika username dan password tidak kosong
     if (noHpValue !== '') {
-      // login ke server
+      // check apakah nomor HP valid
       if (checkValid) {
-        const confirmation = await auth().signInWithPhoneNumber(noHpValue);
-        console.log(1);
-        if (confirmation) {
-          setConfirm(confirmation);
-        }
+        // check ke database nomor HP terdaftar atau tidak
+        axios
+          .post('http://192.168.11.149:3001/login/mobile', {
+            nomorhp: noHpValue,
+          })
+          .then(res => {
+            // Jika nomor HP terdaftar
+            if (res.data.alert === 1) {
+              // Sign in dengan nomor HP ke firebase
+              auth()
+                .signInWithPhoneNumber(noHpValue)
+                .then(response => {
+                  // Jika berhasil sign in
+                  if (response) {
+                    setConfirm(response);
+                  }
+                })
+                // jika error
+                .catch(err => {
+                  console.log(err);
+                });
+              // Jika nomor HP tidak terdaftar
+            } else {
+              Toast.show({
+                type: 'gagal',
+                text1: 'Nomor HP tidak terdaftar, Silahkan daftar',
+                visibilityTime: 2000,
+              });
+            }
+          })
+          // jika server ke databse error
+          .catch(err => {
+            console.log(err);
+          });
+        // jika nomor HP tidak Valid
       } else {
         Toast.show({
           type: 'warning',
@@ -63,6 +92,7 @@ const LogIn = () => {
           visibilityTime: 2000,
         });
       }
+      // jika form nomor hp kosong
     } else {
       Toast.show({
         type: 'warning',
@@ -71,8 +101,9 @@ const LogIn = () => {
       });
     }
   };
+  // Jika Sign in berhasil dan ke OTP PAGE
   if (confirm) {
-    return <OTPPage confirm={confirm} />;
+    return <OTPPage confirm={confirm} nomorhp={noHpValue} />;
   }
   return (
     <SafeAreaView style={styles.container}>
