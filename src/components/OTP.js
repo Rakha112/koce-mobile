@@ -8,7 +8,8 @@ import {
   useWindowDimensions,
 } from 'react-native';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
-export default function App() {
+import {connect} from 'react-redux';
+const OTP = ({setOTP}) => {
   const {width} = useWindowDimensions();
   const jumlahBox = 6;
   let inputRef = useRef(null);
@@ -16,9 +17,11 @@ export default function App() {
   const [focus, setFocus] = useState(false);
   const change = text => {
     setVal(text);
+    setOTP(text);
   };
+
   return (
-    <View style={[styles.container, {width: width}]}>
+    <View style={[styles.containerOTP, {width: width}]}>
       <View style={styles.boxContainer}>
         {Array(jumlahBox)
           .fill()
@@ -42,7 +45,7 @@ export default function App() {
         style={styles.textInput}
         placeholder="Masukan Angka"
         maxLength={jumlahBox}
-        keyboardType="numeric"
+        keyboardType="number-pad"
         returnKeyType="done"
         value={val}
         onFocus={() => setFocus(true)}
@@ -54,17 +57,19 @@ export default function App() {
       />
     </View>
   );
-}
+};
+
+const mapDispatchToProps = dispatch => {
+  return {
+    setOTP: data => dispatch({type: 'OTP', payload: data}),
+  };
+};
+
+export default connect(null, mapDispatchToProps)(OTP);
 
 const styles = StyleSheet.create({
-  container: {
+  containerOTP: {
     marginVertical: 40,
-  },
-  paragraph: {
-    margin: 24,
-    fontSize: 18,
-    fontWeight: 'bold',
-    textAlign: 'center',
   },
   textInput: {
     position: 'absolute',

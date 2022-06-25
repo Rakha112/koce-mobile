@@ -5,11 +5,20 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import Button from '../components/Button';
 import OTP from '../components/OTP';
-const OTPPage = () => {
+import {connect} from 'react-redux';
+const OTPPage = ({confirm, OTPcode}) => {
+  // const {data} = route.params;
   const {height} = useWindowDimensions();
-  const submitHandle = () => {
-    console.log('SUBMIT');
+  const submitHandle = async () => {
+    try {
+      await confirm.confirm(OTPcode);
+      console.log('BERHASIL');
+    } catch (error) {
+      console.log('Invalid code.');
+      console.log({error});
+    }
   };
+
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAwareScrollView
@@ -47,8 +56,12 @@ const OTPPage = () => {
     </SafeAreaView>
   );
 };
-
-export default OTPPage;
+const mapStateToProps = state => {
+  return {
+    OTPcode: state.OTPcode,
+  };
+};
+export default connect(mapStateToProps)(OTPPage);
 
 const styles = StyleSheet.create({
   container: {

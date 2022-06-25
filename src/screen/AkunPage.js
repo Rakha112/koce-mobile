@@ -8,9 +8,13 @@ import PhoneIcon from '../assets/svg/PhoneIcon.svg';
 import EmailIcon from '../assets/svg/EmailIcon.svg';
 import LocationIcon from '../assets/svg/LocationIcon.svg';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import auth from '@react-native-firebase/auth';
 const AkunPage = () => {
   const keluarHandle = () => {
     EncryptedStorage.removeItem('user_session');
+    auth()
+      .signOut()
+      .then(() => console.log('User signed out!'));
   };
   const {height} = useWindowDimensions();
   return (

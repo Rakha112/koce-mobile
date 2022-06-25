@@ -14,48 +14,32 @@ import SignUpPage from './src/screen/SignUpPage';
 import ToastComponent from './src/components/ToastComponent';
 import LogIn from './src/screen/LogInPage';
 import SplashScreen from 'react-native-splash-screen';
-import {axiosAuth} from './src/services/axiosAuth';
 import OTPPage from './src/screen/OTPPage';
-
+import auth from '@react-native-firebase/auth';
 const App = () => {
   const Stack = createStackNavigator();
   const [loading, setLoading] = useState(false);
   const [login, setLogin] = useState(false);
-  // useEffect(() => {
-  //   SplashScreen.hide();
-  // }, []);
+  const [user, setUser] = useState();
 
-  // Get user LOGIN
   useEffect(() => {
-    console.log('INIT');
-    if (!loading) {
-      console.log('HALOO');
-      axiosAuth
-        .get('http://192.168.11.149:3001/profile')
-        .then(res => {
-          console.log(1);
-          console.log(res.data);
-          if (res.data.loggedIn) {
-            console.log(2);
-            setLogin(true);
-            setTimeout(() => {
-              setLoading(true);
-            }, 500);
-          } else {
-            console.log(3);
-            setTimeout(() => {
-              setLoading(true);
-            }, 500);
-            setLogin(false);
-          }
-        })
-        .catch(() => {
-          console.log(4);
-          setLogin(false);
-          setLoading(true);
-          // EncryptedStorage.removeItem('user_session');
-        });
-    } else {
+    const onAuthStateChanged = res => {
+      setUser(res);
+      if (res) {
+        setLogin(true);
+        setLoading(true);
+      } else {
+        setLogin(false);
+        setLoading(true);
+      }
+    };
+
+    const subscriber = auth().onAuthStateChanged(onAuthStateChanged);
+    return subscriber; // unsubscribe on unmount
+  }, []);
+
+  useEffect(() => {
+    if (loading) {
       SplashScreen.hide();
     }
   }, [loading]);
@@ -67,6 +51,8 @@ const App = () => {
     counter: 1,
     accessToken: '',
     refreshToken: '',
+    OTPcode: '',
+    confirm: null,
   };
   const rootReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -95,11 +81,22 @@ const App = () => {
           ...state,
           refreshToken: action.payload,
         };
+      case 'OTP':
+        return {
+          ...state,
+          OTPcode: action.payload,
+        };
+      case 'CONFIRM':
+        return {
+          ...state,
+          confirm: action.payload,
+        };
       default:
         return state;
     }
   };
   const store = configureStore({reducer: rootReducer});
+
   return (
     <Provider store={store}>
       <SafeAreaProvider>
@@ -110,18 +107,10 @@ const App = () => {
         />
         <NavigationContainer>
           <Stack.Navigator
-            // initialRouteName={'OTP'}
             screenOptions={{
               headerShown: false,
               ...TransitionPresets.SlideFromRightIOS,
             }}>
-            {/* <Stack.Screen name="Home" component={BottomTabNavigation} />
-            <Stack.Screen name="Keranjang" component={KeranjangPage} />
-            <Stack.Screen name="Search" component={SearchPage} />
-            <Stack.Screen name="Detail" component={DetailedMenu} />
-            <Stack.Screen name="LogIn" component={LogIn} />
-            <Stack.Screen name="SignUp" component={SignUpPage} /> */}
-
             {login ? (
               <>
                 <Stack.Screen name="Home" component={BottomTabNavigation} />
@@ -134,8 +123,6 @@ const App = () => {
                 <Stack.Screen name="SignUp" component={SignUpPage} />
                 <Stack.Screen name="LogIn" component={LogIn} />
                 <Stack.Screen name="OTP" component={OTPPage} />
-                <Stack.Screen name="Home" component={BottomTabNavigation} />
-                <Stack.Screen name="Detail" component={DetailedMenu} />
               </>
             )}
           </Stack.Navigator>

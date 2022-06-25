@@ -10,12 +10,15 @@ import {useNavigation} from '@react-navigation/native';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import {connect} from 'react-redux';
 import PhoneInput from 'react-native-phone-number-input';
-const LogIn = ({setAccessToken, setRefreshToken}) => {
+import auth from '@react-native-firebase/auth';
+import OTPPage from './OTPPage';
+const LogIn = () => {
   const navigation = useNavigation();
   const {width, height} = useWindowDimensions();
   // State
   const [noHpInput, setNoHpInput] = useState(false);
   const [noHpValue, setNoHpValue] = useState('');
+  const [confirm, setConfirm] = useState(null);
   // Ref
   const noHpRef = useRef(null);
   axios.defaults.withCredentials = true;
@@ -41,13 +44,18 @@ const LogIn = ({setAccessToken, setRefreshToken}) => {
       console.log(error);
     }
   };
-  const submitHandle = () => {
-    const checkValid = noHpRef.current?.isValidNumber(noHpValue);
+
+  const submitHandle = async () => {
+    const checkValid = noHpRef.current.isValidNumber(noHpValue);
     //Jika username dan password tidak kosong
     if (noHpValue !== '') {
       // login ke server
       if (checkValid) {
-        navigation.navigate('OTP');
+        const confirmation = await auth().signInWithPhoneNumber(noHpValue);
+        console.log(1);
+        if (confirmation) {
+          setConfirm(confirmation);
+        }
       } else {
         Toast.show({
           type: 'warning',
@@ -63,6 +71,9 @@ const LogIn = ({setAccessToken, setRefreshToken}) => {
       });
     }
   };
+  if (confirm) {
+    return <OTPPage confirm={confirm} />;
+  }
   return (
     <SafeAreaView style={styles.container}>
       <KeyboardAwareScrollView
@@ -139,13 +150,7 @@ const LogIn = ({setAccessToken, setRefreshToken}) => {
   );
 };
 
-const mapDispatchToProps = dispatch => {
-  return {
-    setAccessToken: data => dispatch({type: 'ACCESSTOKEN', payload: data}),
-    setRefreshToken: data => dispatch({type: 'REFRESHTOKEN', payload: data}),
-  };
-};
-export default connect(null, mapDispatchToProps)(LogIn);
+export default LogIn;
 
 const styles = StyleSheet.create({
   container: {
