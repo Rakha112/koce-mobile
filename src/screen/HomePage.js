@@ -6,12 +6,12 @@ import {
   ScrollView,
   Keyboard,
   RefreshControl,
+  // SafeAreaView,
 } from 'react-native';
 import React, {useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import SearchIcon from '../assets/svg/SearchIcon.svg';
-import CartIcon from '../assets/svg/CartIcon.svg';
 import {useNavigation} from '@react-navigation/native';
 import Carousel from '../components/Carousel';
 import ListMenu from '../components/ListMenu';
@@ -46,8 +46,8 @@ const HomePage = () => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View
+    <SafeAreaView style={styles.container} edges={['right', 'top', 'left']}>
+      {/* <View
         style={{
           flexDirection: 'row',
           justifyContent: 'space-between',
@@ -74,7 +74,7 @@ const HomePage = () => {
           onPress={() => navigation.navigate('Keranjang')}>
           <CartIcon width={28} height={28} stroke={'black'} />
         </TouchableWithoutFeedback>
-      </View>
+      </View> */}
       <ScrollView
         onScrollBeginDrag={() => Keyboard.dismiss()}
         showsVerticalScrollIndicator={false}

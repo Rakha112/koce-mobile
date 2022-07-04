@@ -9,7 +9,7 @@ const MaterialTopTabsNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={{
-        tabBarStyle: {marginTop: insets.top, margin: 0},
+        tabBarStyle: {paddingTop: insets.top, margin: 0},
         tabBarLabelStyle: {fontFamily: 'Inter-Regular', textTransform: 'none'},
         tabBarPressColor: 'white',
         tabBarIndicatorStyle: {backgroundColor: '#FFA901'},

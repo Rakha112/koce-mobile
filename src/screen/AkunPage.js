@@ -18,7 +18,7 @@ const AkunPage = () => {
   };
   const {height} = useWindowDimensions();
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['right', 'top', 'left']}>
       <KeyboardAwareScrollView
         enableOnAndroid={true}
         showsVerticalScrollIndicator={false}
