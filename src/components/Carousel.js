@@ -40,7 +40,7 @@ const CarouselComp = () => {
           <View key={index} style={[styles.container, {width: CARD_WIDTH}]}>
             <Image
               source={data.imageLink}
-              resizeMode={'center'}
+              resizeMode={'contain'}
               style={{width: CARD_WIDTH}}
             />
             {/* <Text>{data.text}</Text> */}

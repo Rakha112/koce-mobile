@@ -11,7 +11,13 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import auth from '@react-native-firebase/auth';
 const AkunPage = () => {
   const keluarHandle = () => {
-    EncryptedStorage.removeItem('user_session');
+    try {
+      EncryptedStorage.removeItem('user_session');
+    } catch (error) {
+      // There was an error on the native side
+      // You can find out more about this error by using the `error.code` property
+      console.log(error.code); // ex: -25300 (errSecItemNotFound)
+    }
     auth()
       .signOut()
       .then(() => console.log('User signed out!'));

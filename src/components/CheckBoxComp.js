@@ -1,9 +1,10 @@
 /* eslint-disable react-native/no-inline-styles */
-import {Text, View} from 'react-native';
+import {Text, View, Platform} from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
-import CheckBox from '@react-native-community/checkbox';
 import {connect} from 'react-redux';
+import CheckBoxIcon from '../assets/svg/CheckBoxIcon.svg';
+import CheckBoxIconAktif from '../assets/svg/CheckBoxIconAktif.svg';
 const CheckBoxComp = ({nama, maxRasa, setJumlahRasa, rasa}) => {
   const [toggleCheckBox, setToggleCheckBox] = useState(false);
   useEffect(() => {
@@ -11,9 +12,25 @@ const CheckBoxComp = ({nama, maxRasa, setJumlahRasa, rasa}) => {
       setJumlahRasa(0);
     };
   }, [setJumlahRasa]);
+
   return (
-    <View>
-      <View
+    <View style={{marginBottom: Platform.OS === 'android' ? 0 : 10}}>
+      <TouchableWithoutFeedback
+        onPress={() => {
+          console.log('LOHAA');
+          if (toggleCheckBox) {
+            console.log('HALOOO');
+            setJumlahRasa(rasa - 1);
+            setToggleCheckBox(false);
+          } else {
+            if (rasa < maxRasa) {
+              console.log({rasa});
+              console.log({maxRasa});
+              setJumlahRasa(rasa + 1);
+              setToggleCheckBox(true);
+            }
+          }
+        }}
         style={{
           flexDirection: 'row',
         }}>
@@ -22,45 +39,17 @@ const CheckBoxComp = ({nama, maxRasa, setJumlahRasa, rasa}) => {
             flex: 1,
             justifyContent: 'center',
           }}>
-          <TouchableWithoutFeedback
-            onPress={() => {
-              if (toggleCheckBox) {
-                setJumlahRasa(rasa - 1);
-                setToggleCheckBox(false);
-              } else {
-                if (rasa < maxRasa) {
-                  setJumlahRasa(rasa + 1);
-                  setToggleCheckBox(true);
-                }
-              }
+          <Text
+            style={{
+              fontFamily: 'Inter-SemiBold',
+              color: 'black',
+              fontSize: 16,
             }}>
-            <Text
-              style={{
-                fontFamily: 'Inter-SemiBold',
-                color: 'black',
-                fontSize: 16,
-              }}>
-              {nama}
-            </Text>
-          </TouchableWithoutFeedback>
+            {nama}
+          </Text>
         </View>
-        <CheckBox
-          tintColors={{true: '#FFA901'}}
-          disabled={false}
-          value={toggleCheckBox}
-          onValueChange={() => {
-            if (toggleCheckBox) {
-              setJumlahRasa(rasa - 1);
-              setToggleCheckBox(false);
-            } else {
-              if (rasa < maxRasa) {
-                setJumlahRasa(rasa + 1);
-                setToggleCheckBox(true);
-              }
-            }
-          }}
-        />
-      </View>
+        {toggleCheckBox ? <CheckBoxIconAktif /> : <CheckBoxIcon />}
+      </TouchableWithoutFeedback>
     </View>
   );
 };

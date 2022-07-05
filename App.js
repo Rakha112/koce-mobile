@@ -16,6 +16,7 @@ import LogIn from './src/screen/LogInPage';
 import SplashScreen from 'react-native-splash-screen';
 import OTPPage from './src/screen/OTPPage';
 import auth from '@react-native-firebase/auth';
+import Coba from './src/screen/Coba';
 const App = () => {
   const Stack = createStackNavigator();
   const [loading, setLoading] = useState(false);
@@ -120,6 +121,7 @@ const App = () => {
               </>
             ) : (
               <>
+                {/* <Stack.Screen name="Coba" component={Coba} /> */}
                 <Stack.Screen name="SignUp" component={SignUpPage} />
                 <Stack.Screen name="LogIn" component={LogIn} />
                 <Stack.Screen name="OTP" component={OTPPage} />

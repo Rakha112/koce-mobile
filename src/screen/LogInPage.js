@@ -1,5 +1,13 @@
 /* eslint-disable react-native/no-inline-styles */
-import {StyleSheet, Text, View, useWindowDimensions, Image} from 'react-native';
+import {
+  StyleSheet,
+  Text,
+  View,
+  useWindowDimensions,
+  Image,
+  StatusBar,
+  Platform,
+} from 'react-native';
 import React, {useState, useRef} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Button from '../components/Button';
@@ -65,6 +73,7 @@ const LogIn = () => {
                   // Jika berhasil sign in
                   if (response) {
                     setConfirm(response);
+                    storeUserSession('a', 'b', 'c', 'd');
                   }
                 })
                 // jika error
@@ -110,9 +119,17 @@ const LogIn = () => {
       <KeyboardAwareScrollView
         enableOnAndroid={true}
         showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}>
-        <View style={{height: height}}>
-          <View style={{alignItems: 'center', marginTop: 'auto'}}>
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={{flexGrow: 1}}>
+        <View
+          style={
+            Platform.OS === 'android'
+              ? {
+                  height: height,
+                }
+              : {flex: 1}
+          }>
+          <View style={styles.imageContainer}>
             <Image
               source={require('../assets/images/koceLogo.png')}
               style={styles.image}
@@ -210,20 +227,28 @@ const styles = StyleSheet.create({
     color: '#FFA901',
     fontFamily: 'Inter-SemiBold',
   },
+  imageContainer: {
+    alignItems: 'center',
+    flex: 2,
+    justifyContent: 'center',
+    // backgroundColor: 'blue',
+  },
   bawah: {
-    marginTop: 'auto',
-    marginBottom: 30,
+    justifyContent: 'flex-end',
+    flex: 1,
     alignItems: 'center',
   },
   form: {
-    marginTop: 40,
-    marginBottom: 'auto',
+    flex: 2,
+    justifyContent: 'flex-start',
     alignItems: 'center',
   },
   phoneInputContainer: {
     marginBottom: 10,
     marginTop: 10,
     paddingLeft: 0,
+    paddingVertical: 0,
+    height: 45,
   },
   phoneInputTextContainer: {
     backgroundColor: 'white',

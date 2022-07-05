@@ -39,7 +39,9 @@ const DetailedMenu = ({route, counter, setCounter}) => {
           />
         </TouchableWithoutFeedback>
       </View>
-      <ScrollView contentContainerStyle={styles.scrollView}>
+      <ScrollView
+        contentContainerStyle={styles.scrollView}
+        showsVerticalScrollIndicator={false}>
         <View style={[styles.imageContainer, {width: width * 0.9}]}>
           <Image
             source={data.image}
@@ -146,6 +148,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-evenly',
     alignItems: 'center',
-    marginBottom: 10,
+    marginBottom: 0,
   },
 });

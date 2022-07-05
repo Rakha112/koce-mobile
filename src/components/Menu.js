@@ -34,7 +34,7 @@ const Menu = ({judul, image, now, selected, deskripsi, harga, maxRasa}) => {
       <View style={styles.imgaeContainer}>
         <Image
           source={image}
-          resizeMode={'center'}
+          resizeMode={'contain'}
           style={{width: '100%', height: undefined, flex: 1}}
         />
       </View>

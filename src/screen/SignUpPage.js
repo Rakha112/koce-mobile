@@ -7,6 +7,8 @@ import {
   TextInput,
   useWindowDimensions,
   Image,
+  StatusBar,
+  Platform,
 } from 'react-native';
 import React, {useState, useRef} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
@@ -45,6 +47,7 @@ const SignUpPage = () => {
     }
   };
   axios.defaults.withCredentials = true;
+
   const submitHandle = () => {
     const checkValid = noHpRef.current?.isValidNumber(noHpValue);
     if (namaValue !== '' && emailValue !== '' && noHpValue !== '') {
@@ -102,12 +105,22 @@ const SignUpPage = () => {
   };
   return (
     <SafeAreaView style={styles.container}>
+      <StatusBar />
       <KeyboardAwareScrollView
-        enableOnAndroid={true}
+        enableOnAndroid
         showsVerticalScrollIndicator={false}
-        showsHorizontalScrollIndicator={false}>
-        <View style={{height: height}}>
-          <View style={{alignItems: 'center', marginTop: 'auto'}}>
+        showsHorizontalScrollIndicator={false}
+        automaticallyAdjustContentInsets={false}
+        contentContainerStyle={{flexGrow: 1}}>
+        <View
+          style={
+            Platform.OS === 'android'
+              ? {
+                  height: height,
+                }
+              : {flex: 1}
+          }>
+          <View style={styles.imageContainer}>
             <Image
               source={require('../assets/images/koceLogo.png')}
               style={styles.image}
@@ -271,25 +284,37 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     marginTop: 10,
     paddingLeft: 20,
+    paddingVertical: 0,
+    height: 45,
   },
   span: {
     color: '#FFA901',
     fontFamily: 'Inter-SemiBold',
   },
-  bawah: {
-    marginTop: 'auto',
-    marginBottom: 30,
+  imageContainer: {
     alignItems: 'center',
+    flex: 2,
+    justifyContent: 'center',
+    // backgroundColor: 'blue',
+  },
+  bawah: {
+    justifyContent: 'flex-end',
+    flex: 1,
+    alignItems: 'center',
+    // backgroundColor: 'pink',
   },
   form: {
-    marginTop: 'auto',
-    marginBottom: 'auto',
+    flex: 2,
+    justifyContent: 'flex-start',
     alignItems: 'center',
+    // backgroundColor: 'orange',
   },
   phoneInputContainer: {
     marginBottom: 10,
     marginTop: 10,
     paddingLeft: 0,
+    paddingVertical: 0,
+    height: 45,
   },
   phoneInputTextContainer: {
     backgroundColor: 'white',
