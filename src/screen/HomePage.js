@@ -1,8 +1,5 @@
-/* eslint-disable react-native/no-inline-styles */
 import {
   StyleSheet,
-  Text,
-  View,
   ScrollView,
   Keyboard,
   RefreshControl,
@@ -10,16 +7,12 @@ import {
 } from 'react-native';
 import React, {useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
-import SearchIcon from '../assets/svg/SearchIcon.svg';
-import {useNavigation} from '@react-navigation/native';
 import Carousel from '../components/Carousel';
 import ListMenu from '../components/ListMenu';
 import EncryptedStorage from 'react-native-encrypted-storage';
 import axios from 'axios';
 const HomePage = () => {
   axios.defaults.withCredentials = true;
-  const navigation = useNavigation();
   // eslint-disable-next-line no-unused-vars
   const [refreshing, setRefreshing] = useState(false);
 
@@ -47,34 +40,6 @@ const HomePage = () => {
 
   return (
     <SafeAreaView style={styles.container} edges={['right', 'top', 'left']}>
-      {/* <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          alignItems: 'center',
-          marginBottom: 10,
-        }}>
-        <View style={{flex: 1}}>
-          <TouchableWithoutFeedback
-            style={[styles.inputSection]}
-            onPress={() => navigation.navigate('Search')}>
-            <SearchIcon
-              width={16}
-              height={16}
-              fill={'#FFA901'}
-              style={styles.searchIcon}
-            />
-            <View style={styles.input}>
-              <Text style={{fontFamily: 'Inter-Regular'}}>Cari...</Text>
-            </View>
-          </TouchableWithoutFeedback>
-        </View>
-        <TouchableWithoutFeedback
-          style={styles.cartIcon}
-          onPress={() => navigation.navigate('Keranjang')}>
-          <CartIcon width={28} height={28} stroke={'black'} />
-        </TouchableWithoutFeedback>
-      </View> */}
       <ScrollView
         onScrollBeginDrag={() => Keyboard.dismiss()}
         showsVerticalScrollIndicator={false}

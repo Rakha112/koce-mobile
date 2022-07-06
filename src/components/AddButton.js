@@ -10,7 +10,7 @@ import Animated, {
 } from 'react-native-reanimated';
 import {connect} from 'react-redux';
 import Toast from 'react-native-toast-message';
-const AddButton = ({maxRasa, rasa}) => {
+const AddButton = ({maxRasa, rasa, harga, namaRasa, namaMakanan, jumlah}) => {
   const {width} = useWindowDimensions();
   const scaleValue = useSharedValue(1);
   const animatedStyles = useAnimatedStyle(() => {
@@ -30,8 +30,10 @@ const AddButton = ({maxRasa, rasa}) => {
             });
           }}
           onPress={() => {
-            console.log(maxRasa);
-            console.log(rasa);
+            console.log({namaRasa});
+            console.log({harga});
+            console.log({namaMakanan});
+            console.log({jumlah});
           }}
           onPressOut={() => {
             scaleValue.value = withTiming(1, {
@@ -64,6 +66,7 @@ const AddButton = ({maxRasa, rasa}) => {
 const mapStateToProps = state => {
   return {
     rasa: state.rasa,
+    namaRasa: state.namaRasa,
   };
 };
 export default connect(mapStateToProps)(AddButton);

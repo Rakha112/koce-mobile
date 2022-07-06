@@ -8,7 +8,6 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import NumberFormat from 'react-number-format';
-import FavoritBotton from './FavoritBotton';
 const Menu = ({judul, image, now, selected, deskripsi, harga, maxRasa}) => {
   const scaleValue = useSharedValue(1);
   const animatedStyles = useAnimatedStyle(() => {
@@ -72,18 +71,6 @@ const Menu = ({judul, image, now, selected, deskripsi, harga, maxRasa}) => {
                 </Text>
               )}
             />
-            <View
-              style={{
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-              }}>
-              {/* <FavoritBotton
-                judul={judul}
-                deskripsi={deskripsi}
-                harga={harga}
-              /> */}
-            </View>
           </View>
         </View>
       </View>

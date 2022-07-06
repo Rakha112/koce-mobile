@@ -16,7 +16,6 @@ import LogIn from './src/screen/LogInPage';
 import SplashScreen from 'react-native-splash-screen';
 import OTPPage from './src/screen/OTPPage';
 import auth from '@react-native-firebase/auth';
-import Coba from './src/screen/Coba';
 const App = () => {
   const Stack = createStackNavigator();
   const [loading, setLoading] = useState(false);
@@ -54,6 +53,7 @@ const App = () => {
     refreshToken: '',
     OTPcode: '',
     confirm: null,
+    namaRasa: [],
   };
   const rootReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -66,6 +66,22 @@ const App = () => {
         return {
           ...state,
           rasa: action.payload,
+        };
+      case 'SET_NAMA_RASA':
+        return {
+          ...state,
+          namaRasa: [...state.namaRasa, action.payload],
+        };
+      case 'REMOVE_NAMA_RASA':
+        return {
+          ...state,
+          // remove namaRasa yang sesuai dengan action.payload
+          namaRasa: state.namaRasa.filter(nama => nama !== action.payload),
+        };
+      case 'REMOVE_ALL_NAMA_RASA':
+        return {
+          ...state,
+          namaRasa: [],
         };
       case 'COUNTER':
         return {
@@ -121,7 +137,6 @@ const App = () => {
               </>
             ) : (
               <>
-                {/* <Stack.Screen name="Coba" component={Coba} /> */}
                 <Stack.Screen name="SignUp" component={SignUpPage} />
                 <Stack.Screen name="LogIn" component={LogIn} />
                 <Stack.Screen name="OTP" component={OTPPage} />

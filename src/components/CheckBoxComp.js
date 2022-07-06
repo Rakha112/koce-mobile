@@ -5,13 +5,22 @@ import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import {connect} from 'react-redux';
 import CheckBoxIcon from '../assets/svg/CheckBoxIcon.svg';
 import CheckBoxIconAktif from '../assets/svg/CheckBoxIconAktif.svg';
-const CheckBoxComp = ({nama, maxRasa, setJumlahRasa, rasa}) => {
+const CheckBoxComp = ({
+  nama,
+  maxRasa,
+  setJumlahRasa,
+  rasa,
+  setNamaRasa,
+  removeNamaRasa,
+  removeAllNamaRasa,
+}) => {
   const [toggleCheckBox, setToggleCheckBox] = useState(false);
   useEffect(() => {
     return () => {
       setJumlahRasa(0);
+      removeAllNamaRasa();
     };
-  }, [setJumlahRasa]);
+  }, [removeAllNamaRasa, setJumlahRasa]);
 
   return (
     <View style={{marginBottom: Platform.OS === 'android' ? 0 : 10}}>
@@ -19,15 +28,14 @@ const CheckBoxComp = ({nama, maxRasa, setJumlahRasa, rasa}) => {
         onPress={() => {
           console.log('LOHAA');
           if (toggleCheckBox) {
-            console.log('HALOOO');
             setJumlahRasa(rasa - 1);
+            removeNamaRasa(nama);
             setToggleCheckBox(false);
           } else {
             if (rasa < maxRasa) {
-              console.log({rasa});
-              console.log({maxRasa});
               setJumlahRasa(rasa + 1);
               setToggleCheckBox(true);
+              setNamaRasa(nama);
             }
           }
         }}
@@ -61,6 +69,9 @@ const mapStateToProps = state => {
 const mapDispatchToProps = dispatch => {
   return {
     setJumlahRasa: data => dispatch({type: 'RASA', payload: data}),
+    setNamaRasa: data => dispatch({type: 'SET_NAMA_RASA', payload: data}),
+    removeNamaRasa: data => dispatch({type: 'REMOVE_NAMA_RASA', payload: data}),
+    removeAllNamaRasa: () => dispatch({type: 'REMOVE_ALL_NAMA_RASA'}),
   };
 };
 

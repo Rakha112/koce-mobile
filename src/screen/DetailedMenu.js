@@ -17,7 +17,6 @@ import {useNavigation} from '@react-navigation/native';
 import CheckBoxComp from '../components/CheckBoxComp';
 import CounterComp from '../components/CounterComp';
 import {connect} from 'react-redux';
-import FavoritButton from '../components/FavoritBotton';
 const DetailedMenu = ({route, counter, setCounter}) => {
   const navigation = useNavigation();
   const {width} = useWindowDimensions();
@@ -88,7 +87,12 @@ const DetailedMenu = ({route, counter, setCounter}) => {
         <CounterComp />
       </ScrollView>
       <View style={styles.bawah}>
-        <AddButton maxRasa={data.maxRasa} />
+        <AddButton
+          maxRasa={data.maxRasa}
+          harga={data.harga * counter}
+          namaMakanan={data.nama}
+          jumlah={counter}
+        />
       </View>
     </SafeAreaView>
   );
