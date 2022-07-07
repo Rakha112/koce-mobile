@@ -9,7 +9,6 @@ import {
 } from 'react-native';
 import React, {useState, useEffect} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
-import NumberFormat from 'react-number-format';
 import AddButton from '../components/AddButton';
 import ArrowIcon from '../assets/svg/ArrowIcon.svg';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
@@ -17,6 +16,7 @@ import {useNavigation} from '@react-navigation/native';
 import CheckBoxComp from '../components/CheckBoxComp';
 import CounterComp from '../components/CounterComp';
 import {connect} from 'react-redux';
+import FormatNumber from '../components/FormatNumber';
 const DetailedMenu = ({route, counter, setCounter}) => {
   const navigation = useNavigation();
   const {width} = useWindowDimensions();
@@ -51,16 +51,9 @@ const DetailedMenu = ({route, counter, setCounter}) => {
         <View style={styles.contentContainer}>
           <View style={styles.judulHarga}>
             <Text style={styles.textJudul}>{data.nama}</Text>
-            <NumberFormat
+            <FormatNumber
               value={data.harga * counter}
-              displayType={'text'}
-              thousandSeparator={'.'}
-              decimalSeparator={','}
-              renderText={(value, props) => (
-                <Text style={styles.textJudul} {...props}>
-                  {value}
-                </Text>
-              )}
+              style={styles.textJudul}
             />
           </View>
           <Text style={styles.textDeskripsi}>{data.deskripsi}</Text>

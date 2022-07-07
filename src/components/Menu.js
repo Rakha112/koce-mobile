@@ -7,7 +7,7 @@ import Animated, {
   withTiming,
   Easing,
 } from 'react-native-reanimated';
-import NumberFormat from 'react-number-format';
+import FormatNumber from './FormatNumber';
 const Menu = ({judul, image, now, selected, deskripsi, harga, maxRasa}) => {
   const scaleValue = useSharedValue(1);
   const animatedStyles = useAnimatedStyle(() => {
@@ -32,7 +32,7 @@ const Menu = ({judul, image, now, selected, deskripsi, harga, maxRasa}) => {
     <Animated.View style={[styles.container, animatedStyles]}>
       <View style={styles.imgaeContainer}>
         <Image
-          source={image}
+          source={require('../assets/images/panasL.png')}
           resizeMode={'contain'}
           style={{width: '100%', height: undefined, flex: 1}}
         />
@@ -60,17 +60,7 @@ const Menu = ({judul, image, now, selected, deskripsi, harga, maxRasa}) => {
               flexDirection: 'row',
               justifyContent: 'space-between',
             }}>
-            <NumberFormat
-              value={harga}
-              displayType={'text'}
-              thousandSeparator={'.'}
-              decimalSeparator={','}
-              renderText={(value, props) => (
-                <Text style={styles.harga} {...props}>
-                  {value}
-                </Text>
-              )}
-            />
+            <FormatNumber value={harga} style={styles.harga} />
           </View>
         </View>
       </View>
