@@ -17,7 +17,7 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import axios from 'axios';
 import Toast from 'react-native-toast-message';
 import {useNavigation} from '@react-navigation/native';
-import PhoneInput from 'react-native-phone-number-input';
+// import PhoneInput from 'react-native-phone-number-input';
 
 const SignUpPage = () => {
   const navigation = useNavigation();
@@ -133,7 +133,7 @@ const SignUpPage = () => {
                 style={[styles.text, {alignSelf: 'baseline', marginLeft: 10}]}>
                 Nomor HP
               </Text>
-              <PhoneInput
+              {/* <PhoneInput
                 ref={noHpRef}
                 // autoFocus={true}
                 // Container Style
@@ -168,7 +168,7 @@ const SignUpPage = () => {
                 onChangeFormattedText={text => {
                   setNoHpValue(text);
                 }}
-              />
+              /> */}
             </View>
             {/* Nama input field */}
             <View>

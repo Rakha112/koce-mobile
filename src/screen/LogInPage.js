@@ -16,9 +16,11 @@ import axios from 'axios';
 import Toast from 'react-native-toast-message';
 import {useNavigation} from '@react-navigation/native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-import PhoneInput from 'react-native-phone-number-input';
+// import PhoneInput from 'react-native-phone-number-input';
 import auth from '@react-native-firebase/auth';
 import OTPPage from './OTPPage';
+import PhoneNumberInput from '../components/PhoneNumberInput';
+import BottomSheetCountryPicker from '../components/BottomSheetCountryPicker';
 const LogIn = () => {
   const navigation = useNavigation();
   const {width, height} = useWindowDimensions();
@@ -141,7 +143,8 @@ const LogIn = () => {
                 style={[styles.text, {alignSelf: 'baseline', marginLeft: 10}]}>
                 Nomor HP
               </Text>
-              <PhoneInput
+              <PhoneNumberInput />
+              {/* <PhoneInput
                 ref={noHpRef}
                 // autoFocus={true}
                 // Container Style
@@ -176,7 +179,7 @@ const LogIn = () => {
                 onChangeFormattedText={text => {
                   setNoHpValue(text);
                 }}
-              />
+              /> */}
             </View>
           </View>
           <View style={styles.bawah}>
@@ -194,6 +197,7 @@ const LogIn = () => {
           </View>
         </View>
       </KeyboardAwareScrollView>
+      <BottomSheetCountryPicker />
     </SafeAreaView>
   );
 };
