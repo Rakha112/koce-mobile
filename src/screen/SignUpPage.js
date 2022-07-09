@@ -184,6 +184,7 @@ const SignUpPage = ({noHP}) => {
                 ref={emailRef}
                 autoCapitalize="none"
                 placeholder="Masukkan Email Anda..."
+                keyboardType="email-address"
                 // set border aktif
                 onFocus={() => {
                   setEmailInput(true);

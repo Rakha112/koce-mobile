@@ -51,7 +51,13 @@ const PhoneNumberInput = ({
           setFocus(false);
         }}
         // set value dari input ke state NamaValue
-        onChangeText={value => setNoHP(dialCode + value)}
+        onChangeText={value => {
+          if (value !== '') {
+            setNoHP(dialCode + value);
+          } else {
+            setNoHP('');
+          }
+        }}
         // Ke input selanjutnya jika keyboard selesai
         onSubmitEditing={() => onSubmit}
         autoComplete="name"
@@ -96,6 +102,8 @@ const styles = StyleSheet.create({
   },
   flag: {fontSize: 20, paddingLeft: 20},
   input: {
+    flex: 1,
+    height: '100%',
     fontFamily: 'Inter-Regular',
   },
 });
