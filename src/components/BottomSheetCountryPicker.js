@@ -1,4 +1,4 @@
-import React, {useCallback, useRef, useState, useEffect} from 'react';
+import React, {useCallback, useState, useEffect, forwardRef} from 'react';
 import {View, Text, StyleSheet} from 'react-native';
 import BottomSheet, {
   BottomSheetBackdrop,
@@ -7,18 +7,14 @@ import BottomSheet, {
 import {dataCountry} from '../data/dataCountryPhoneNumber';
 import {TextInput} from 'react-native-gesture-handler';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-const BottomSheetCountryPicker = () => {
+import {connect} from 'react-redux';
+// Pakai forwardRef untuk passing BottomSheet Ref ke parent dan digunakan di component lain
+const BottomSheetCountryPicker = forwardRef((props, ref) => {
   const [searchData, setSearchData] = useState(dataCountry);
   const [search, setSearch] = useState('');
-  // ref
-  const bottomSheetRef = useRef(null);
-
-  // callbacks
-  const handleSheetChanges = useCallback(index => {
-    console.log('handleSheetChanges', index);
-  }, []);
-  // renders
+  //callback backdrop
   const renderBackdrop = useCallback(
+    // eslint-disable-next-line no-shadow
     props => (
       <BottomSheetBackdrop
         {...props}
@@ -56,12 +52,15 @@ const BottomSheetCountryPicker = () => {
     };
     handleSearch(search);
   }, [search]);
+  // component yang dirender di FlatList
   const renderItem = useCallback(
     ({item}) => (
       <TouchableOpacity
         style={styles.itemContainer}
         onPress={() => {
-          console.log('PRESS');
+          ref.current.close();
+          props.setFlag(item.emoji);
+          props.setDialCode(item.dial_code);
         }}>
         <Text style={styles.flag}>{item.emoji}</Text>
         <View style={styles.nameNumberContainer}>
@@ -70,16 +69,15 @@ const BottomSheetCountryPicker = () => {
         </View>
       </TouchableOpacity>
     ),
-    [],
+    [props, ref],
   );
   return (
     <BottomSheet
-      ref={bottomSheetRef}
-      index={1}
+      ref={ref}
+      index={-1}
       enablePanDownToClose
       snapPoints={['90%', '90%']}
-      backdropComponent={renderBackdrop}
-      onChange={handleSheetChanges}>
+      backdropComponent={renderBackdrop}>
       <TextInput
         style={styles.searchStyle}
         placeholder="Cari Negara"
@@ -95,7 +93,17 @@ const BottomSheetCountryPicker = () => {
       />
     </BottomSheet>
   );
+});
+
+const mapDispatchToProps = dispatch => {
+  return {
+    setFlag: data => dispatch({type: 'FLAG', payload: data}),
+    setDialCode: data => dispatch({type: 'DIAL_CODE', payload: data}),
+  };
 };
+export default connect(null, mapDispatchToProps, null, {forwardRef: true})(
+  BottomSheetCountryPicker,
+);
 
 const styles = StyleSheet.create({
   searchStyle: {
@@ -129,5 +137,3 @@ const styles = StyleSheet.create({
     fontFamily: 'Inter-SemiBold',
   },
 });
-
-export default BottomSheetCountryPicker;

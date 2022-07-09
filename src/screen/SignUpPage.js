@@ -17,24 +17,23 @@ import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import axios from 'axios';
 import Toast from 'react-native-toast-message';
 import {useNavigation} from '@react-navigation/native';
-// import PhoneInput from 'react-native-phone-number-input';
-
-const SignUpPage = () => {
+import PhoneNumberInput from '../components/PhoneNumberInput';
+import BottomSheetCountryPicker from '../components/BottomSheetCountryPicker';
+import {connect} from 'react-redux';
+const SignUpPage = ({noHP}) => {
   const navigation = useNavigation();
   // State
   const {width, height} = useWindowDimensions();
   const [namaInput, setNamaInput] = useState(false);
   const [emailInput, setEmailInput] = useState(false);
   const [emailValidate, setEmailValidate] = useState(false);
-  const [noHpInput, setNoHpInput] = useState(false);
   const [namaValue, setNamaValue] = useState('');
   const [emailValue, setEmailValue] = useState('');
-  const [noHpValue, setNoHpValue] = useState('');
 
   // Ref
   const namaRef = useRef(null);
   const emailRef = useRef(null);
-  const noHpRef = useRef(null);
+  const bottomSheetRef = useRef(null);
   const validate = text => {
     let reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
     if (reg.test(text) === false) {
@@ -47,47 +46,40 @@ const SignUpPage = () => {
     }
   };
   axios.defaults.withCredentials = true;
-
+  const onSubmitHandlePhone = () => {
+    namaRef.current.focus();
+  };
   const submitHandle = () => {
-    const checkValid = noHpRef.current?.isValidNumber(noHpValue);
-    if (namaValue !== '' && emailValue !== '' && noHpValue !== '') {
+    if (namaValue !== '' && emailValue !== '' && noHP !== '') {
       if (emailValidate) {
-        if (checkValid) {
-          axios
-            .post('https://server-koce.herokuapp.com/signup', {
-              nohp: noHpValue,
-              email: emailValue,
-              nama: namaValue,
-            })
-            .then(response => {
-              if (response.data.alert === 1) {
-                Toast.show({
-                  type: 'sukses',
-                  text1: response.data.pesan,
-                  visibilityTime: 2000,
-                });
-                // navigation.replace('Login');
-              } else if (response.data.alert === 2) {
-                Toast.show({
-                  type: 'gagal',
-                  text1: response.data.pesan,
-                  visibilityTime: 2000,
-                });
-              } else {
-                Toast.show({
-                  type: 'gagal',
-                  text1: response.data.pesan,
-                  visibilityTime: 2000,
-                });
-              }
-            });
-        } else {
-          Toast.show({
-            type: 'warning',
-            text1: 'Nomor Hp tidak valid',
-            visibilityTime: 2000,
+        axios
+          .post('https://server-koce.herokuapp.com/signup', {
+            nohp: noHP,
+            email: emailValue,
+            nama: namaValue,
+          })
+          .then(response => {
+            if (response.data.alert === 1) {
+              Toast.show({
+                type: 'sukses',
+                text1: response.data.pesan,
+                visibilityTime: 2000,
+              });
+              // navigation.replace('Login');
+            } else if (response.data.alert === 2) {
+              Toast.show({
+                type: 'gagal',
+                text1: response.data.pesan,
+                visibilityTime: 2000,
+              });
+            } else {
+              Toast.show({
+                type: 'gagal',
+                text1: response.data.pesan,
+                visibilityTime: 2000,
+              });
+            }
           });
-        }
       } else {
         Toast.show({
           type: 'warning',
@@ -133,42 +125,10 @@ const SignUpPage = () => {
                 style={[styles.text, {alignSelf: 'baseline', marginLeft: 10}]}>
                 Nomor HP
               </Text>
-              {/* <PhoneInput
-                ref={noHpRef}
-                // autoFocus={true}
-                // Container Style
-                containerStyle={[
-                  styles.phoneInputContainer,
-                  {width: (width * 90) / 100},
-                ]}
-                // Text Container Style
-                textContainerStyle={[
-                  styles.phoneInputTextContainer,
-                  {borderColor: noHpInput ? '#FFA901' : 'black'},
-                ]}
-                // flag style
-                flagButtonStyle={[
-                  styles.phoneInputFlagStyle,
-                  {borderColor: noHpInput ? '#FFA901' : 'black'},
-                ]}
-                // +62 style
-                codeTextStyle={{marginHorizontal: 10}}
-                // Text input props seperti onFocus, onBlur
-                textInputProps={{
-                  onFocus: () => {
-                    setNoHpInput(true);
-                  },
-                  onBlur: () => {
-                    setNoHpInput(false);
-                  },
-                  onSubmitEditing: () => namaRef.current.focus(),
-                }}
-                defaultCode="ID"
-                layout="first"
-                onChangeFormattedText={text => {
-                  setNoHpValue(text);
-                }}
-              /> */}
+              <PhoneNumberInput
+                bottomSheetRef={bottomSheetRef}
+                onSubmit={onSubmitHandlePhone}
+              />
             </View>
             {/* Nama input field */}
             <View>
@@ -256,11 +216,16 @@ const SignUpPage = () => {
           </View>
         </View>
       </KeyboardAwareScrollView>
+      <BottomSheetCountryPicker ref={bottomSheetRef} />
     </SafeAreaView>
   );
 };
-
-export default SignUpPage;
+const mapStateToProps = state => {
+  return {
+    noHP: state.noHP,
+  };
+};
+export default connect(mapStateToProps)(SignUpPage);
 
 const styles = StyleSheet.create({
   container: {

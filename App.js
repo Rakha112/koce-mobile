@@ -45,7 +45,6 @@ const App = () => {
   }, [loading]);
 
   const initialState = {
-    bottomSheet: false,
     login: false,
     rasa: 0,
     counter: 1,
@@ -54,13 +53,26 @@ const App = () => {
     OTPcode: '',
     confirm: null,
     namaRasa: [],
+    flag: '🇮🇩',
+    dialCode: '+62',
+    noHP: '',
   };
   const rootReducer = (state = initialState, action) => {
     switch (action.type) {
-      case 'BOTTOMSHEET':
+      case 'NO_HP':
         return {
           ...state,
-          bottomSheet: action.payload,
+          noHP: action.payload,
+        };
+      case 'FLAG':
+        return {
+          ...state,
+          flag: action.payload,
+        };
+      case 'DIAL_CODE':
+        return {
+          ...state,
+          dialCode: action.payload,
         };
       case 'RASA':
         return {

@@ -1,3 +1,4 @@
+/* eslint-disable react-native/no-inline-styles */
 import {
   StyleSheet,
   Text,
@@ -5,51 +6,72 @@ import {
   useWindowDimensions,
   TextInput,
 } from 'react-native';
-import React from 'react';
+import React, {useState} from 'react';
 import {TouchableOpacity} from 'react-native-gesture-handler';
-const PhoneNumberInput = () => {
+import {connect} from 'react-redux';
+const PhoneNumberInput = ({
+  bottomSheetRef,
+  flag,
+  dialCode,
+  setNoHP,
+  onSubmit,
+}) => {
   const {width} = useWindowDimensions();
+  const [focus, setFocus] = useState(false);
   return (
     <View
       style={[
         styles.phoneInputContainer,
         {
           width: (width * 90) / 100,
+          borderColor: focus ? '#FFA901' : 'black',
         },
       ]}>
       <TouchableOpacity
         style={styles.phoneInputFlagStyle}
         onPress={() => {
           console.log('PRESS');
+          bottomSheetRef.current.expand();
         }}>
-        <Text style={styles.flag}>🇮🇩</Text>
+        <Text style={styles.flag}>{flag}</Text>
+        <Text style={styles.phoneInputTextContainer}>{dialCode}</Text>
       </TouchableOpacity>
-      <Text style={styles.phoneInputTextContainer}>+62</Text>
       <TextInput
+        autoFocus={true}
         style={styles.input}
         autoCapitalize="none"
         placeholder="Masukkan Nomor HP..."
-        keyboardType="numeric"
+        keyboardType="phone-pad"
         // set border aktif
         onFocus={() => {
-          // setNamaInput(true);
+          setFocus(true);
         }}
         // set border tidak aktif
         onBlur={() => {
-          // setNamaInput(false);
+          setFocus(false);
         }}
         // set value dari input ke state NamaValue
-        // onChangeText={value => setNamaValue(value)}
+        onChangeText={value => setNoHP(dialCode + value)}
         // Ke input selanjutnya jika keyboard selesai
-        // onSubmitEditing={() => emailRef.current.focus()}
+        onSubmitEditing={() => onSubmit}
         autoComplete="name"
         textContentType="name"
       />
     </View>
   );
 };
-
-export default PhoneNumberInput;
+const mapStateToProps = state => {
+  return {
+    flag: state.flag,
+    dialCode: state.dialCode,
+  };
+};
+const mapDispatchToProps = dispatch => {
+  return {
+    setNoHP: data => dispatch({type: 'NO_HP', payload: data}),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(PhoneNumberInput);
 
 const styles = StyleSheet.create({
   phoneInputContainer: {
@@ -60,19 +82,19 @@ const styles = StyleSheet.create({
     height: 45,
     alignItems: 'center',
     flexDirection: 'row',
-    paddingLeft: 5,
+    // paddingLeft: 5,
   },
   phoneInputTextContainer: {
-    paddingRight: 10,
+    paddingHorizontal: 10,
     fontFamily: 'Inter-Bold',
   },
   phoneInputFlagStyle: {
-    width: 50,
     height: '100%',
     justifyContent: 'center',
     alignItems: 'center',
+    flexDirection: 'row',
   },
-  flag: {fontSize: 20},
+  flag: {fontSize: 20, paddingLeft: 20},
   input: {
     fontFamily: 'Inter-Regular',
   },

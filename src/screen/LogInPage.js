@@ -5,7 +5,6 @@ import {
   View,
   useWindowDimensions,
   Image,
-  StatusBar,
   Platform,
 } from 'react-native';
 import React, {useState, useRef} from 'react';
@@ -16,20 +15,18 @@ import axios from 'axios';
 import Toast from 'react-native-toast-message';
 import {useNavigation} from '@react-navigation/native';
 import EncryptedStorage from 'react-native-encrypted-storage';
-// import PhoneInput from 'react-native-phone-number-input';
 import auth from '@react-native-firebase/auth';
 import OTPPage from './OTPPage';
 import PhoneNumberInput from '../components/PhoneNumberInput';
 import BottomSheetCountryPicker from '../components/BottomSheetCountryPicker';
-const LogIn = () => {
+import {connect} from 'react-redux';
+const LogIn = ({noHP}) => {
   const navigation = useNavigation();
-  const {width, height} = useWindowDimensions();
+  const {height} = useWindowDimensions();
   // State
-  const [noHpInput, setNoHpInput] = useState(false);
-  const [noHpValue, setNoHpValue] = useState('');
   const [confirm, setConfirm] = useState(null);
   // Ref
-  const noHpRef = useRef(null);
+  const bottomSheetRef = useRef(null);
   axios.defaults.withCredentials = true;
 
   // function untuk store ke storage
@@ -55,54 +52,44 @@ const LogIn = () => {
   };
 
   const submitHandle = async () => {
-    const checkValid = noHpRef.current.isValidNumber(noHpValue);
     //Jika username dan password tidak kosong
-    if (noHpValue !== '') {
-      // check apakah nomor HP valid
-      if (checkValid) {
-        // check ke database nomor HP terdaftar atau tidak
-        axios
-          .post('https://server-koce.herokuapp.com/login/mobile', {
-            nomorhp: noHpValue,
-          })
-          .then(res => {
-            // Jika nomor HP terdaftar
-            if (res.data.alert === 1) {
-              // Sign in dengan nomor HP ke firebase
-              auth()
-                .signInWithPhoneNumber(noHpValue)
-                .then(response => {
-                  // Jika berhasil sign in
-                  if (response) {
-                    setConfirm(response);
-                    storeUserSession('a', 'b', 'c', 'd');
-                  }
-                })
-                // jika error
-                .catch(err => {
-                  console.log(err);
-                });
-              // Jika nomor HP tidak terdaftar
-            } else {
-              Toast.show({
-                type: 'gagal',
-                text1: 'Nomor HP tidak terdaftar, Silahkan daftar',
-                visibilityTime: 2000,
+    console.log({noHP});
+    if (noHP !== '') {
+      // check ke database nomor HP terdaftar atau tidak
+      axios
+        .post('https://server-koce.herokuapp.com/login/mobile', {
+          nomorhp: noHP,
+        })
+        .then(res => {
+          // Jika nomor HP terdaftar
+          if (res.data.alert === 1) {
+            // Sign in dengan nomor HP ke firebase
+            auth()
+              .signInWithPhoneNumber(noHP)
+              .then(response => {
+                // Jika berhasil sign in
+                if (response) {
+                  setConfirm(response);
+                  storeUserSession('a', 'b', 'c', 'd');
+                }
+              })
+              // jika error
+              .catch(err => {
+                console.log(err);
               });
-            }
-          })
-          // jika server ke databse error
-          .catch(err => {
-            console.log(err);
-          });
-        // jika nomor HP tidak Valid
-      } else {
-        Toast.show({
-          type: 'warning',
-          text1: 'Nomor HP tidak valid',
-          visibilityTime: 2000,
+            // Jika nomor HP tidak terdaftar
+          } else {
+            Toast.show({
+              type: 'gagal',
+              text1: 'Nomor HP tidak terdaftar, Silahkan daftar',
+              visibilityTime: 2000,
+            });
+          }
+        })
+        // jika server ke databse error
+        .catch(err => {
+          console.log(err);
         });
-      }
       // jika form nomor hp kosong
     } else {
       Toast.show({
@@ -114,7 +101,7 @@ const LogIn = () => {
   };
   // Jika Sign in berhasil dan ke OTP PAGE
   if (confirm) {
-    return <OTPPage confirm={confirm} nomorhp={noHpValue} />;
+    return <OTPPage confirm={confirm} nomorhp={noHP} />;
   }
   return (
     <SafeAreaView style={styles.container}>
@@ -143,43 +130,10 @@ const LogIn = () => {
                 style={[styles.text, {alignSelf: 'baseline', marginLeft: 10}]}>
                 Nomor HP
               </Text>
-              <PhoneNumberInput />
-              {/* <PhoneInput
-                ref={noHpRef}
-                // autoFocus={true}
-                // Container Style
-                containerStyle={[
-                  styles.phoneInputContainer,
-                  {width: (width * 90) / 100},
-                ]}
-                // Text Container Style
-                textContainerStyle={[
-                  styles.phoneInputTextContainer,
-                  {borderColor: noHpInput ? '#FFA901' : 'black'},
-                ]}
-                // flag style
-                flagButtonStyle={[
-                  styles.phoneInputFlagStyle,
-                  {borderColor: noHpInput ? '#FFA901' : 'black'},
-                ]}
-                // +62 style
-                codeTextStyle={{marginHorizontal: 10}}
-                // Text input props seperti onFocus, onBlur
-                textInputProps={{
-                  onFocus: () => {
-                    setNoHpInput(true);
-                  },
-                  onBlur: () => {
-                    setNoHpInput(false);
-                  },
-                  onSubmitEditing: () => submitHandle(),
-                }}
-                defaultCode="ID"
-                layout="first"
-                onChangeFormattedText={text => {
-                  setNoHpValue(text);
-                }}
-              /> */}
+              <PhoneNumberInput
+                bottomSheetRef={bottomSheetRef}
+                onSubmit={submitHandle}
+              />
             </View>
           </View>
           <View style={styles.bawah}>
@@ -197,12 +151,16 @@ const LogIn = () => {
           </View>
         </View>
       </KeyboardAwareScrollView>
-      <BottomSheetCountryPicker />
+      <BottomSheetCountryPicker ref={bottomSheetRef} />
     </SafeAreaView>
   );
 };
-
-export default LogIn;
+const mapStateToProps = state => {
+  return {
+    noHP: state.noHP,
+  };
+};
+export default connect(mapStateToProps)(LogIn);
 
 const styles = StyleSheet.create({
   container: {
