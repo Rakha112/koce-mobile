@@ -8,7 +8,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import FormatNumber from './FormatNumber';
-const Menu = ({judul, image, now, selected, deskripsi, harga, maxRasa}) => {
+const Menu = ({judul, foto, now, selected, deskripsi, harga}) => {
   const scaleValue = useSharedValue(1);
   const animatedStyles = useAnimatedStyle(() => {
     return {transform: [{scale: scaleValue.value}]};
@@ -32,7 +32,7 @@ const Menu = ({judul, image, now, selected, deskripsi, harga, maxRasa}) => {
     <Animated.View style={[styles.container, animatedStyles]}>
       <View style={styles.imgaeContainer}>
         <Image
-          source={require('../assets/images/panasL.png')}
+          source={{uri: foto}}
           resizeMode={'contain'}
           style={{width: '100%', height: undefined, flex: 1}}
         />

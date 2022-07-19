@@ -1,95 +1,64 @@
-import {StyleSheet, Text, View} from 'react-native';
-import React, {useState} from 'react';
+import {StyleSheet, Text, View, ActivityIndicator} from 'react-native';
+import React, {useState, useEffect} from 'react';
+import EncryptedStorage from 'react-native-encrypted-storage';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import Menu from './Menu';
 import {useNavigation} from '@react-navigation/native';
+import axios from 'axios';
 const ListMenu = () => {
-  const [selected, setSelected] = useState('');
   const navigation = useNavigation();
-  const dataKategori = [
-    {
-      kategori: 'Chicken Only',
-      data: [
-        {
-          nama: 'Suju',
-          image: require('../assets/images/suju.png'),
-          deskripsi:
-            'Suju - Super Tujuh, Setengah Ekor Ayam Yang Dipotong Menjadi 7',
-          harga: 38000,
-          maxRasa: 1,
-        },
-        {
-          nama: 'Half - Half',
-          image: require('../assets/images/halfHalf.png'),
-          deskripsi: 'Satu Ekor Ayam Yang Dipotong Menjadi 14 Bagian',
-          harga: 68000,
-          maxRasa: 2,
-        },
-        {
-          nama: 'Whole Cut',
-          image: require('../assets/images/wholeCut.png'),
-          deskripsi: 'Satu Ekor Ayam Yang Dipotong Menjadi 14 Bagian',
-          harga: 68000,
-          maxRasa: 1,
-        },
-      ],
-    },
-    {
-      kategori: 'Paket Nasi',
-      data: [
-        {
-          nama: 'Panas S',
-          image: require('../assets/images/panasS.png'),
-          deskripsi: 'Paket Nasi + 2 Chicken (Ukuran 1/14)',
-          harga: 17000,
-          maxRasa: 1,
-        },
-        {
-          nama: 'Panas M',
-          image: require('../assets/images/panasM.png'),
-          deskripsi: 'Paket Nasi + 3 Chicken (Ukuran 1/14)',
-          harga: 23000,
-          maxRasa: 1,
-        },
-        {
-          nama: 'Panas L',
-          image: require('../assets/images/panasL.png'),
-          deskripsi: 'Paket Nasi + 4 Chicken (Ukuran 1/14)',
-          harga: 29000,
-          maxRasa: 1,
-        },
-      ],
-    },
-  ];
+  const [selected, setSelected] = useState('');
+  const [data, setData] = useState([]);
+  useEffect(() => {
+    axios.get('https://server-koce.herokuapp.com/data').then(res => {
+      console.log('HAHAHAHA');
+      setData(res.data.data);
+      EncryptedStorage.setItem(
+        'data_menu',
+        JSON.stringify({
+          data: res.data.data,
+        }),
+      );
+    });
+  }, []);
 
   return (
     <View style={styles.container}>
-      {dataKategori.map((item, index) => {
-        return (
-          <View key={index}>
-            <Text style={styles.textTittle}>{item.kategori}</Text>
-            {item.data.map((data, i) => {
-              return (
-                <TouchableWithoutFeedback
-                  key={i}
-                  onPressIn={() => setSelected(data.nama)}
-                  onPress={() => navigation.navigate('Detail', {item: data})}
-                  onPressOut={() => setSelected('')}>
-                  <Menu
-                    judul={data.nama}
-                    image={data.image}
-                    deskripsi={data.deskripsi}
-                    harga={data.harga}
-                    now={data.nama}
-                    maxRasa={data.maxRasa}
-                    selected={selected}
-                  />
-                </TouchableWithoutFeedback>
-              );
-            })}
-          </View>
-        );
-      })}
+      {data.length === 0 ? (
+        <ActivityIndicator size={'large'} />
+      ) : (
+        data.map((item, index) => {
+          return (
+            <View key={index}>
+              <Text style={styles.textTittle}>{item.NamaKategori}</Text>
+              {JSON.parse(item.Menu) === null ? (
+                <Text>KOSONG</Text>
+              ) : (
+                JSON.parse(item.Menu).map((value, i) => {
+                  return (
+                    <TouchableWithoutFeedback
+                      key={i}
+                      onPressIn={() => setSelected(value.nama)}
+                      onPress={() =>
+                        navigation.navigate('Detail', {item: value})
+                      }
+                      onPressOut={() => setSelected('')}>
+                      <Menu
+                        judul={value.Nama}
+                        foto={value.Foto}
+                        deskripsi={value.Deskripsi}
+                        harga={value.Harga}
+                        now={value.Nama}
+                        selected={selected}
+                      />
+                    </TouchableWithoutFeedback>
+                  );
+                })
+              )}
+            </View>
+          );
+        })
+      )}
     </View>
   );
 };
