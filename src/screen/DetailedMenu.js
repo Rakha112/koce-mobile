@@ -7,7 +7,7 @@ import {
   useWindowDimensions,
   ScrollView,
 } from 'react-native';
-import React, {useState, useEffect} from 'react';
+import React, {useEffect} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import AddButton from '../components/AddButton';
 import ArrowIcon from '../assets/svg/ArrowIcon.svg';
@@ -20,12 +20,13 @@ import FormatNumber from '../components/FormatNumber';
 const DetailedMenu = ({route, counter, setCounter}) => {
   const navigation = useNavigation();
   const {width} = useWindowDimensions();
-  const [data] = useState(route.params.item);
+  const {item} = route.params;
   useEffect(() => {
     return () => {
       setCounter(1);
     };
   }, [setCounter]);
+
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -43,47 +44,57 @@ const DetailedMenu = ({route, counter, setCounter}) => {
         showsVerticalScrollIndicator={false}>
         <View style={[styles.imageContainer, {width: width * 0.9}]}>
           <Image
-            source={data.image}
+            source={{uri: item.Foto}}
             resizeMode={'center'}
             style={styles.image}
           />
         </View>
         <View style={styles.contentContainer}>
           <View style={styles.judulHarga}>
-            <Text style={styles.textJudul}>{data.nama}</Text>
+            <Text style={styles.textJudul}>{item.Nama}</Text>
             <FormatNumber
-              value={data.harga * counter}
+              value={item.Harga * counter}
               style={styles.textJudul}
             />
           </View>
-          <Text style={styles.textDeskripsi}>{data.deskripsi}</Text>
+          <Text style={styles.textDeskripsi}>{item.Deskripsi}</Text>
         </View>
-        <View style={{marginTop: 10}}>
-          <View style={{flexDirection: 'row', alignItems: 'center'}}>
-            <Text
-              style={[
-                styles.textDeskripsi,
-                {fontFamily: 'Inter-Bold', fontSize: 20},
-              ]}>
-              Rasa
-            </Text>
-            <Text style={[styles.textDeskripsi, {marginHorizontal: 5}]}>
-              Pilih {data.maxRasa}
-            </Text>
-          </View>
-          <CheckBoxComp nama={'Korean Spicy'} maxRasa={data.maxRasa} />
-          <CheckBoxComp nama={'Korean Spicy Nut'} maxRasa={data.maxRasa} />
-          <CheckBoxComp nama={'Original'} maxRasa={data.maxRasa} />
-          <CheckBoxComp nama={'Bulgogi'} maxRasa={data.maxRasa} />
-          <CheckBoxComp nama={'SnowCheese'} maxRasa={data.maxRasa} />
-        </View>
+        {item.Variasi.map((value, i) => {
+          return (
+            <View style={{marginTop: 10}} key={i}>
+              <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                <Text
+                  style={[
+                    styles.textDeskripsi,
+                    {fontFamily: 'Inter-Bold', fontSize: 20},
+                  ]}>
+                  {value.Nama}
+                </Text>
+                <Text style={[styles.textDeskripsi, {marginHorizontal: 5}]}>
+                  Pilih {value.MaxPilihan}
+                </Text>
+              </View>
+              {value.Opsi.map((v, i) => {
+                return (
+                  <View key={i}>
+                    <CheckBoxComp
+                      nama={v.NamaOpsi}
+                      maxRasa={value.MaxPilihan}
+                    />
+                  </View>
+                );
+              })}
+            </View>
+          );
+        })}
+
         <CounterComp />
       </ScrollView>
       <View style={styles.bawah}>
         <AddButton
-          maxRasa={data.maxRasa}
-          harga={data.harga * counter}
-          namaMakanan={data.nama}
+          maxRasa={item.maxRasa}
+          harga={item.harga * counter}
+          namaMakanan={item.nama}
           jumlah={counter}
         />
       </View>
