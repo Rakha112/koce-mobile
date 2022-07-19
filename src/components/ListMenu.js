@@ -1,26 +1,12 @@
 import {StyleSheet, Text, View, ActivityIndicator} from 'react-native';
-import React, {useState, useEffect} from 'react';
-import EncryptedStorage from 'react-native-encrypted-storage';
+import React, {useState} from 'react';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import Menu from './Menu';
 import {useNavigation} from '@react-navigation/native';
-import axios from 'axios';
-const ListMenu = () => {
+import Toast from 'react-native-toast-message';
+const ListMenu = ({data}) => {
   const navigation = useNavigation();
   const [selected, setSelected] = useState('');
-  const [data, setData] = useState([]);
-  useEffect(() => {
-    axios.get('https://server-koce.herokuapp.com/data').then(res => {
-      console.log('HAHAHAHA');
-      setData(res.data.data);
-      EncryptedStorage.setItem(
-        'data_menu',
-        JSON.stringify({
-          data: res.data.data,
-        }),
-      );
-    });
-  }, []);
 
   return (
     <View style={styles.container}>
@@ -38,12 +24,29 @@ const ListMenu = () => {
                   return (
                     <TouchableWithoutFeedback
                       key={i}
-                      onPressIn={() => setSelected(value.nama)}
-                      onPress={() =>
-                        navigation.navigate('Detail', {item: value})
-                      }
-                      onPressOut={() => setSelected('')}>
+                      onPressIn={() => {
+                        if (value.Status === 1) {
+                          setSelected(value.Nama);
+                        } else {
+                          Toast.show({
+                            type: 'warning',
+                            text1: `${value.Nama} Stok Habis`,
+                            visibilityTime: 2000,
+                          });
+                        }
+                      }}
+                      onPress={() => {
+                        if (value.Status === 1) {
+                          navigation.navigate('Detail', {item: value});
+                        }
+                      }}
+                      onPressOut={() => {
+                        if (value.Status === 1) {
+                          setSelected('');
+                        }
+                      }}>
                       <Menu
+                        status={value.Status}
                         judul={value.Nama}
                         foto={value.Foto}
                         deskripsi={value.Deskripsi}

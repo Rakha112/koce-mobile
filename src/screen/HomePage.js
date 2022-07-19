@@ -5,39 +5,27 @@ import {
   RefreshControl,
   // SafeAreaView,
 } from 'react-native';
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import Carousel from '../components/Carousel';
 import ListMenu from '../components/ListMenu';
-import EncryptedStorage from 'react-native-encrypted-storage';
 import axios from 'axios';
 const HomePage = () => {
   axios.defaults.withCredentials = true;
   // eslint-disable-next-line no-unused-vars
   const [refreshing, setRefreshing] = useState(false);
-
-  const retrieveUserSession = async () => {
-    try {
-      const session = await EncryptedStorage.getItem('user_session');
-
-      if (session !== undefined) {
-        // Congrats! You've just retrieved your first value!
-        return session;
-      }
-    } catch (error) {
-      // There was an error on the native side
-      console.log(error);
-    }
-  };
-
-  React.useEffect(() => {
-    retrieveUserSession();
-  }, []);
-
+  const [data, setData] = useState([]);
   const handleRefresh = () => {
-    console.log('REFRESH');
+    axios.get('https://server-koce.herokuapp.com/data').then(res => {
+      setData(res.data.data);
+      console.log(res.data.data);
+    });
   };
-
+  useEffect(() => {
+    axios.get('https://server-koce.herokuapp.com/data').then(res => {
+      setData(res.data.data);
+    });
+  }, []);
   return (
     <SafeAreaView style={styles.container} edges={['right', 'top', 'left']}>
       <ScrollView
@@ -50,7 +38,7 @@ const HomePage = () => {
           />
         }>
         <Carousel />
-        <ListMenu />
+        <ListMenu data={data} />
       </ScrollView>
     </SafeAreaView>
   );
