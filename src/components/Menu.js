@@ -8,7 +8,7 @@ import Animated, {
   Easing,
 } from 'react-native-reanimated';
 import FormatNumber from './FormatNumber';
-const Menu = ({judul, foto, now, selected, deskripsi, harga}) => {
+const Menu = ({judul, foto, now, selected, deskripsi, harga, status}) => {
   const scaleValue = useSharedValue(1);
   const animatedStyles = useAnimatedStyle(() => {
     return {transform: [{scale: scaleValue.value}]};
@@ -27,45 +27,96 @@ const Menu = ({judul, foto, now, selected, deskripsi, harga}) => {
       });
     }
   }, [now, scaleValue, selected]);
-
-  return (
-    <Animated.View style={[styles.container, animatedStyles]}>
-      <View style={styles.imgaeContainer}>
-        <Image
-          source={{uri: foto}}
-          resizeMode={'contain'}
-          style={{width: '100%', height: undefined, flex: 1}}
-        />
-      </View>
-      <View
-        style={{
-          width: '100%',
-          marginVertical: 10,
-          flex: 1,
-        }}>
-        <View
-          style={{
-            flex: 1,
-          }}>
-          <Text style={styles.judul}>{judul}</Text>
-          <Text style={styles.deskripsi}>{deskripsi}</Text>
+  if (status === 1) {
+    return (
+      <Animated.View style={[styles.container, animatedStyles]}>
+        <View style={styles.imgaeContainer}>
+          <Image
+            source={{uri: foto}}
+            resizeMode={'contain'}
+            style={{width: '100%', height: undefined, flex: 1}}
+          />
         </View>
         <View
           style={{
+            width: '100%',
+            marginVertical: 10,
             flex: 1,
-            justifyContent: 'flex-end',
           }}>
           <View
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
+              flex: 1,
             }}>
-            <FormatNumber value={harga} style={styles.harga} />
+            <Text style={styles.judul}>{judul}</Text>
+            <Text style={styles.deskripsi}>{deskripsi}</Text>
+          </View>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'flex-end',
+            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <FormatNumber value={harga} style={styles.harga} />
+            </View>
+          </View>
+        </View>
+      </Animated.View>
+    );
+  } else {
+    return (
+      <View style={styles.container}>
+        <View style={styles.imgaeContainer}>
+          <Image
+            source={{uri: foto}}
+            resizeMode={'contain'}
+            style={{width: '100%', height: undefined, flex: 1}}
+          />
+        </View>
+        <View
+          style={{
+            width: '100%',
+            marginVertical: 10,
+            flex: 1,
+          }}>
+          <View
+            style={{
+              flex: 1,
+            }}>
+            <Text style={[styles.judul, {color: 'grey'}]}>{judul}</Text>
+            <Text style={[styles.deskripsi, {color: 'grey'}]}>{deskripsi}</Text>
+          </View>
+          <View
+            style={{
+              flex: 1,
+              justifyContent: 'flex-end',
+            }}>
+            <View
+              style={{
+                flexDirection: 'row',
+                justifyContent: 'space-between',
+              }}>
+              <FormatNumber
+                value={harga}
+                style={[styles.harga, {color: 'grey'}]}
+              />
+              <Text
+                style={{
+                  fontFamily: 'Inter-Bold',
+                  color: 'red',
+                  fontSize: 18,
+                }}>
+                STOK HABIS
+              </Text>
+            </View>
           </View>
         </View>
       </View>
-    </Animated.View>
-  );
+    );
+  }
 };
 
 export default Menu;
