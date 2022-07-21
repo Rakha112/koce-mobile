@@ -10,12 +10,72 @@ import Animated, {
 } from 'react-native-reanimated';
 import {connect} from 'react-redux';
 import Toast from 'react-native-toast-message';
-const AddButton = ({maxRasa, rasa, harga, namaRasa, namaMakanan, jumlah}) => {
+import axios from 'axios';
+const AddButton = ({
+  maxRasa,
+  rasa,
+  hargaTotal,
+  hargaAsli,
+  namaRasa,
+  namaMakanan,
+  jumlah,
+  foto,
+  noHP,
+}) => {
   const {width} = useWindowDimensions();
   const scaleValue = useSharedValue(1);
   const animatedStyles = useAnimatedStyle(() => {
     return {transform: [{scale: scaleValue.value}]};
   });
+
+  const handleAddKeranjang = () => {
+    axios
+      .get('https://server-koce.herokuapp.com/keranjang/check', {
+        params: {
+          menu: namaMakanan,
+          // foto: foto,
+          noHP: noHP,
+          // hargaAsli: hargaAsli,
+          // hargaTotal: hargaTotal,
+          // jumlah: jumlah,
+          variasi: JSON.stringify(namaRasa),
+        },
+      })
+      .then(res => {
+        console.log(res.data.data[0].Exist);
+        if (res.data.data[0].Exist === 0) {
+          axios
+            .post('https://server-koce.herokuapp.com/keranjang/tambah', {
+              menu: namaMakanan,
+              foto: foto,
+              noHP: noHP,
+              hargaAsli: hargaAsli,
+              hargaTotal: hargaTotal,
+              jumlah: jumlah,
+              variasi: JSON.stringify(namaRasa),
+            })
+            .then(response => {
+              Toast.show({
+                type: 'sukses',
+                text1: `${namaMakanan} ${namaRasa} berhasil ditambahkan`,
+                visibilityTime: 2000,
+              });
+            })
+            .catch(err => {
+              console.log(err);
+            });
+        } else {
+          Toast.show({
+            type: 'warning',
+            text1: `${namaMakanan} ${namaRasa} sudah ada`,
+            visibilityTime: 2000,
+          });
+        }
+      })
+      .catch(err => {
+        console.log(err);
+      });
+  };
   // Jika rasa yang dipilih xama maksRasa (rasa yang dibutuhkan)
   if (rasa === maxRasa) {
     return (
@@ -30,10 +90,14 @@ const AddButton = ({maxRasa, rasa, harga, namaRasa, namaMakanan, jumlah}) => {
             });
           }}
           onPress={() => {
+            handleAddKeranjang();
             console.log({namaRasa});
-            console.log({harga});
+            console.log({hargaTotal});
+            console.log({hargaAsli});
             console.log({namaMakanan});
             console.log({jumlah});
+            console.log({foto});
+            console.log({noHP});
           }}
           onPressOut={() => {
             scaleValue.value = withTiming(1, {
