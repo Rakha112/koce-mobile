@@ -22,6 +22,7 @@ const App = () => {
   const [loading, setLoading] = useState(false);
   const [login, setLogin] = useState(false);
   const [user, setUser] = useState();
+  const [nomorHP, setNomorHP] = useState('');
   const [network, setNetwork] = useState();
   useEffect(() => {
     const unsubscribe = NetInfo.addEventListener(state => {
@@ -33,6 +34,7 @@ const App = () => {
     const onAuthStateChanged = res => {
       setUser(res);
       if (res) {
+        setNomorHP(res.phoneNumber);
         setLogin(true);
         setLoading(true);
       } else {
@@ -62,7 +64,7 @@ const App = () => {
     namaRasa: [],
     flag: '🇮🇩',
     dialCode: '+62',
-    noHP: '',
+    noHP: nomorHP,
     networkStatus: network,
     networkRefresh: false,
   };
