@@ -16,12 +16,19 @@ import LogIn from './src/screen/LogInPage';
 import SplashScreen from 'react-native-splash-screen';
 import OTPPage from './src/screen/OTPPage';
 import auth from '@react-native-firebase/auth';
+import NetInfo from '@react-native-community/netinfo';
 const App = () => {
   const Stack = createStackNavigator();
   const [loading, setLoading] = useState(false);
   const [login, setLogin] = useState(false);
   const [user, setUser] = useState();
-
+  const [network, setNetwork] = useState();
+  useEffect(() => {
+    const unsubscribe = NetInfo.addEventListener(state => {
+      setNetwork(state.isConnected);
+    });
+    return () => unsubscribe();
+  }, []);
   useEffect(() => {
     const onAuthStateChanged = res => {
       setUser(res);
@@ -56,6 +63,8 @@ const App = () => {
     flag: '🇮🇩',
     dialCode: '+62',
     noHP: '',
+    networkStatus: network,
+    networkRefresh: false,
   };
   const rootReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -109,6 +118,11 @@ const App = () => {
         return {
           ...state,
           refreshToken: action.payload,
+        };
+      case 'NETWORK_REFRESH':
+        return {
+          ...state,
+          networkRefresh: !state.networkRefresh,
         };
       case 'OTP':
         return {

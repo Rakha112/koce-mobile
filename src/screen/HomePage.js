@@ -10,41 +10,82 @@ import {SafeAreaView} from 'react-native-safe-area-context';
 import Carousel from '../components/Carousel';
 import ListMenu from '../components/ListMenu';
 import axios from 'axios';
-const HomePage = () => {
+import {useNavigation} from '@react-navigation/native';
+import NetworkErrorComp from '../components/NetworkErrorComp';
+import {connect} from 'react-redux';
+const HomePage = ({networkRefresh, networkStatus}) => {
   axios.defaults.withCredentials = true;
-  // eslint-disable-next-line no-unused-vars
+
+  const navigation = useNavigation();
   const [refreshing, setRefreshing] = useState(false);
   const [data, setData] = useState([]);
-  const handleRefresh = () => {
-    axios.get('https://server-koce.herokuapp.com/data').then(res => {
-      setData(res.data.data);
-      console.log(res.data.data);
-    });
-  };
-  useEffect(() => {
-    axios.get('https://server-koce.herokuapp.com/data').then(res => {
-      setData(res.data.data);
-    });
-  }, []);
-  return (
-    <SafeAreaView style={styles.container} edges={['right', 'top', 'left']}>
-      <ScrollView
-        onScrollBeginDrag={() => Keyboard.dismiss()}
-        showsVerticalScrollIndicator={false}
-        refreshControl={
-          <RefreshControl
-            onRefresh={() => handleRefresh()}
-            refreshing={refreshing}
-          />
-        }>
-        <Carousel />
-        <ListMenu data={data} />
-      </ScrollView>
-    </SafeAreaView>
-  );
-};
 
-export default HomePage;
+  const handleRefresh = () => {
+    setRefreshing(true);
+    if (networkStatus) {
+      axios
+        .get('https://server-koce.herokuapp.com/data')
+        .then(res => {
+          setData(res.data.data);
+          setRefreshing(false);
+          console.log('HIHI');
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    } else {
+      setRefreshing(false);
+    }
+  };
+
+  useEffect(() => {
+    console.log('HOHO');
+    if (networkStatus) {
+      axios
+        .get('https://server-koce.herokuapp.com/data')
+        .then(res => {
+          setData(res.data.data);
+          console.log('HAHAHA');
+        })
+        .catch(err => {
+          console.log(err);
+        });
+    }
+  }, [navigation, networkStatus, networkRefresh]);
+  if (networkStatus) {
+    return (
+      <SafeAreaView style={styles.container} edges={['right', 'top', 'left']}>
+        <ScrollView
+          onScrollBeginDrag={() => Keyboard.dismiss()}
+          showsVerticalScrollIndicator={false}
+          refreshControl={
+            <RefreshControl
+              onRefresh={() => handleRefresh()}
+              refreshing={refreshing}
+              colors={'#FFA901'}
+              tintColor={'#FFA901'}
+            />
+          }>
+          <Carousel />
+          <ListMenu data={data} />
+        </ScrollView>
+      </SafeAreaView>
+    );
+  } else {
+    return (
+      <SafeAreaView style={styles.container} edges={['right', 'top', 'left']}>
+        <NetworkErrorComp />
+      </SafeAreaView>
+    );
+  }
+};
+const mapStateToProps = state => {
+  return {
+    networkRefresh: state.networkRefresh,
+    networkStatus: state.networkStatus,
+  };
+};
+export default connect(mapStateToProps)(HomePage);
 
 const styles = StyleSheet.create({
   container: {

@@ -17,7 +17,8 @@ import CheckBoxComp from '../components/CheckBoxComp';
 import CounterComp from '../components/CounterComp';
 import {connect} from 'react-redux';
 import FormatNumber from '../components/FormatNumber';
-const DetailedMenu = ({route, counter, setCounter}) => {
+import NetworkErrorComp from '../components/NetworkErrorComp';
+const DetailedMenu = ({route, counter, setCounter, networkStatus}) => {
   const navigation = useNavigation();
   const {width} = useWindowDimensions();
   const {item} = route.params;
@@ -26,7 +27,80 @@ const DetailedMenu = ({route, counter, setCounter}) => {
       setCounter(1);
     };
   }, [setCounter]);
-
+  if (networkStatus) {
+    return (
+      <SafeAreaView style={styles.container}>
+        <View style={styles.header}>
+          <TouchableWithoutFeedback onPress={() => navigation.pop()}>
+            <ArrowIcon
+              width={24}
+              height={24}
+              fill={'#FFA901'}
+              style={styles.arrowIcon}
+            />
+          </TouchableWithoutFeedback>
+        </View>
+        <ScrollView
+          contentContainerStyle={styles.scrollView}
+          showsVerticalScrollIndicator={false}>
+          <View style={[styles.imageContainer, {width: width * 0.9}]}>
+            <Image
+              source={{uri: item.Foto}}
+              resizeMode={'center'}
+              style={styles.image}
+            />
+          </View>
+          <View style={styles.contentContainer}>
+            <View style={styles.judulHarga}>
+              <Text style={styles.textJudul}>{item.Nama}</Text>
+              <FormatNumber
+                value={item.Harga * counter}
+                style={styles.textJudul}
+              />
+            </View>
+            <Text style={styles.textDeskripsi}>{item.Deskripsi}</Text>
+          </View>
+          {item.Variasi.map((value, index) => {
+            return (
+              <View style={{marginTop: 10}} key={index}>
+                <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                  <Text
+                    style={[
+                      styles.textDeskripsi,
+                      {fontFamily: 'Inter-Bold', fontSize: 20},
+                    ]}>
+                    {value.Nama}
+                  </Text>
+                  <Text style={[styles.textDeskripsi, {marginHorizontal: 5}]}>
+                    Pilih {value.MaxPilihan}
+                  </Text>
+                </View>
+                {value.Opsi.map((v, i) => {
+                  return (
+                    <View key={i}>
+                      <CheckBoxComp
+                        nama={v.NamaOpsi}
+                        maxRasa={value.MaxPilihan}
+                      />
+                    </View>
+                  );
+                })}
+              </View>
+            );
+          })}
+          <CounterComp />
+        </ScrollView>
+        <View style={styles.bawah}>
+          <AddButton
+            maxRasa={item.maxRasa}
+            harga={item.harga * counter}
+            namaMakanan={item.nama}
+            jumlah={counter}
+          />
+        </View>
+      </SafeAreaView>
+    );
+  }
   return (
     <SafeAreaView style={styles.container}>
       <View style={styles.header}>
@@ -39,71 +113,14 @@ const DetailedMenu = ({route, counter, setCounter}) => {
           />
         </TouchableWithoutFeedback>
       </View>
-      <ScrollView
-        contentContainerStyle={styles.scrollView}
-        showsVerticalScrollIndicator={false}>
-        <View style={[styles.imageContainer, {width: width * 0.9}]}>
-          <Image
-            source={{uri: item.Foto}}
-            resizeMode={'center'}
-            style={styles.image}
-          />
-        </View>
-        <View style={styles.contentContainer}>
-          <View style={styles.judulHarga}>
-            <Text style={styles.textJudul}>{item.Nama}</Text>
-            <FormatNumber
-              value={item.Harga * counter}
-              style={styles.textJudul}
-            />
-          </View>
-          <Text style={styles.textDeskripsi}>{item.Deskripsi}</Text>
-        </View>
-        {item.Variasi.map((value, i) => {
-          return (
-            <View style={{marginTop: 10}} key={i}>
-              <View style={{flexDirection: 'row', alignItems: 'center'}}>
-                <Text
-                  style={[
-                    styles.textDeskripsi,
-                    {fontFamily: 'Inter-Bold', fontSize: 20},
-                  ]}>
-                  {value.Nama}
-                </Text>
-                <Text style={[styles.textDeskripsi, {marginHorizontal: 5}]}>
-                  Pilih {value.MaxPilihan}
-                </Text>
-              </View>
-              {value.Opsi.map((v, i) => {
-                return (
-                  <View key={i}>
-                    <CheckBoxComp
-                      nama={v.NamaOpsi}
-                      maxRasa={value.MaxPilihan}
-                    />
-                  </View>
-                );
-              })}
-            </View>
-          );
-        })}
-
-        <CounterComp />
-      </ScrollView>
-      <View style={styles.bawah}>
-        <AddButton
-          maxRasa={item.maxRasa}
-          harga={item.harga * counter}
-          namaMakanan={item.nama}
-          jumlah={counter}
-        />
-      </View>
+      <NetworkErrorComp />
     </SafeAreaView>
   );
 };
 const mapStateToProps = state => {
   return {
     counter: state.counter,
+    networkStatus: state.networkStatus,
   };
 };
 const mapDispatchToProps = dispatch => {
