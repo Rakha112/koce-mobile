@@ -2,6 +2,8 @@
 import {StyleSheet, Text, View, Image} from 'react-native';
 import React from 'react';
 import FormatNumber from './FormatNumber';
+import EditButton from './EditButton';
+
 const MenuKeranjang = ({value}) => {
   return (
     <View style={styles.containerComp}>
@@ -56,6 +58,7 @@ const MenuKeranjang = ({value}) => {
           </View>
         </View>
       </View>
+      <EditButton data={value} />
     </View>
   );
 };

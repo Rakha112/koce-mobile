@@ -49,7 +49,7 @@ const KeranjangPage = ({noHP}) => {
       });
   };
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['right', 'top', 'left']}>
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{flexGrow: 1}}
