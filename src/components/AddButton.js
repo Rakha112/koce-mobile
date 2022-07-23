@@ -21,6 +21,8 @@ const AddButton = ({
   jumlah,
   foto,
   noHP,
+  text,
+  before,
 }) => {
   const {width} = useWindowDimensions();
   const scaleValue = useSharedValue(1);
@@ -80,9 +82,16 @@ const AddButton = ({
   if (rasa === maxRasa) {
     return (
       <Animated.View
-        style={[styles.container, animatedStyles, {width: width * 0.9}]}>
+        style={[
+          styles.container,
+          animatedStyles,
+          {width: before === 'Home' ? width * 0.9 : width * 0.7},
+        ]}>
         <TouchableWithoutFeedback
-          style={[styles.button, {width: width * 0.9}]}
+          style={[
+            styles.button,
+            {width: before === 'Home' ? width * 0.9 : width * 0.7},
+          ]}
           onPressIn={() => {
             scaleValue.value = withTiming(0.9, {
               duration: 500,
@@ -105,14 +114,18 @@ const AddButton = ({
               easing: Easing.out(Easing.exp),
             });
           }}>
-          <Text style={styles.text}>Add</Text>
+          <Text style={styles.text}>{text}</Text>
         </TouchableWithoutFeedback>
       </Animated.View>
     );
   }
   // Jika rasa yang dipilih kurang maksRasa (rasa yang dibutuhkan)
   return (
-    <View style={[styles.container, {width: width * 0.9}]}>
+    <View
+      style={[
+        styles.container,
+        {width: before === 'Home' ? width * 0.9 : width * 0.7},
+      ]}>
       <TouchableWithoutFeedback
         onPress={() => {
           Toast.show({
@@ -121,8 +134,14 @@ const AddButton = ({
             visibilityTime: 2000,
           });
         }}
-        style={[styles.button, {width: width * 0.9, backgroundColor: 'grey'}]}>
-        <Text style={styles.text}>Add</Text>
+        style={[
+          styles.button,
+          {
+            width: before === 'Home' ? width * 0.9 : width * 0.7,
+            backgroundColor: 'grey',
+          },
+        ]}>
+        <Text style={styles.text}>{text}</Text>
       </TouchableWithoutFeedback>
     </View>
   );
@@ -150,6 +169,6 @@ const styles = StyleSheet.create({
     backgroundColor: '#FFA901',
     justifyContent: 'center',
     alignItems: 'center',
-    borderRadius: 50,
+    borderRadius: 14,
   },
 });
