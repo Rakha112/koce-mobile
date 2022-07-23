@@ -16,7 +16,10 @@ const EditButton = ({data}) => {
       })
       .then(res => {
         console.log(res.data.data[0]);
-        navigation.navigate('Detail', {item: res.data.data[0]});
+        navigation.navigate('Detail', {
+          item: res.data.data[0],
+          before: 'Keranjang',
+        });
       });
   };
   return (

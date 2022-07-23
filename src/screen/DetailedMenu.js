@@ -7,7 +7,7 @@ import {
   useWindowDimensions,
   ScrollView,
 } from 'react-native';
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {SafeAreaView} from 'react-native-safe-area-context';
 import AddButton from '../components/AddButton';
 import ArrowIcon from '../assets/svg/ArrowIcon.svg';
@@ -18,10 +18,15 @@ import CounterComp from '../components/CounterComp';
 import {connect} from 'react-redux';
 import FormatNumber from '../components/FormatNumber';
 import NetworkErrorComp from '../components/NetworkErrorComp';
-const DetailedMenu = ({route, counter, setCounter, networkStatus}) => {
+import DeleteButton from '../components/DeleteButton';
+const DetailedMenu = ({route, counter, setCounter, networkStatus, noHP}) => {
   const navigation = useNavigation();
   const {width} = useWindowDimensions();
-  const {item} = route.params;
+  const {item, before} = route.params;
+  const [maxRasa] = useState(item.Variasi[0].MaxPilihan);
+  const [data] = useState(
+    before === 'Home' ? item.Variasi : JSON.parse(item.Variasi),
+  );
   useEffect(() => {
     return () => {
       setCounter(1);
@@ -60,7 +65,7 @@ const DetailedMenu = ({route, counter, setCounter, networkStatus}) => {
             </View>
             <Text style={styles.textDeskripsi}>{item.Deskripsi}</Text>
           </View>
-          {item.Variasi.map((value, index) => {
+          {data.map((value, index) => {
             return (
               <View style={{marginTop: 10}} key={index}>
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -91,11 +96,23 @@ const DetailedMenu = ({route, counter, setCounter, networkStatus}) => {
           <CounterComp />
         </ScrollView>
         <View style={styles.bawah}>
+          {before === 'Home' ? (
+            <></>
+          ) : (
+            <DeleteButton noHP={noHP} menu={item.Nama} />
+          )}
           <AddButton
-            maxRasa={item.maxRasa}
-            harga={item.harga * counter}
-            namaMakanan={item.nama}
+            noHP={noHP}
+            foto={item.Foto}
+            maxRasa={maxRasa}
+            hargaTotal={item.Harga * counter}
+            hargaAsli={item.Harga}
+            namaMakanan={item.Nama}
             jumlah={counter}
+            before={before}
+            text={
+              before === 'Home' ? 'Tambah Ke Keranjang' : 'Update Keranjang'
+            }
           />
         </View>
       </SafeAreaView>
@@ -121,6 +138,7 @@ const mapStateToProps = state => {
   return {
     counter: state.counter,
     networkStatus: state.networkStatus,
+    noHP: state.noHP,
   };
 };
 const mapDispatchToProps = dispatch => {
