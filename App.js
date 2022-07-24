@@ -92,10 +92,17 @@ const App = () => {
           rasa: action.payload,
         };
       case 'SET_NAMA_RASA':
-        return {
-          ...state,
-          namaRasa: [...state.namaRasa, action.payload],
-        };
+        if (state.namaRasa.some(e => e === action.payload)) {
+          return {
+            ...state,
+            namaRasa: state.namaRasa,
+          };
+        } else {
+          return {
+            ...state,
+            namaRasa: [...state.namaRasa, action.payload],
+          };
+        }
       case 'REMOVE_NAMA_RASA':
         return {
           ...state,
