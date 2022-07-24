@@ -14,7 +14,7 @@ import axios from 'axios';
 import {connect} from 'react-redux';
 import KeranjangIconAktif from '../assets/svg/KeranjangIconAktif';
 import MenuKeranjang from '../components/MenuKeranjang';
-const KeranjangPage = ({noHP}) => {
+const KeranjangPage = ({noHP, refreshKeranjang}) => {
   const {width} = useWindowDimensions();
   const [dataKeranjang, setDataKeranjang] = useState();
   const [refreshing, setRefreshing] = useState(false);
@@ -31,7 +31,7 @@ const KeranjangPage = ({noHP}) => {
       .catch(err => {
         console.log(err);
       });
-  }, [noHP]);
+  }, [noHP, refreshKeranjang]);
   const handleRefresh = () => {
     setRefreshing(true);
     axios
@@ -90,6 +90,7 @@ const KeranjangPage = ({noHP}) => {
 const mapStateToProps = state => {
   return {
     noHP: state.noHP,
+    refreshKeranjang: state.refreshKeranjang,
   };
 };
 export default connect(mapStateToProps)(KeranjangPage);

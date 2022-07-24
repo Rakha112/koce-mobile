@@ -19,6 +19,7 @@ const EditButton = ({data}) => {
         navigation.navigate('Detail', {
           item: res.data.data[0],
           before: 'Keranjang',
+          data: data,
         });
       });
   };

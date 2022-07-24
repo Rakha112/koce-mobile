@@ -67,6 +67,7 @@ const App = () => {
     noHP: nomorHP,
     networkStatus: network,
     networkRefresh: false,
+    refreshKeranjang: false,
   };
   const rootReducer = (state = initialState, action) => {
     switch (action.type) {
@@ -135,6 +136,11 @@ const App = () => {
         return {
           ...state,
           confirm: action.payload,
+        };
+      case 'REFRESH_KERANJANG':
+        return {
+          ...state,
+          refreshKeranjang: action.payload,
         };
       default:
         return state;

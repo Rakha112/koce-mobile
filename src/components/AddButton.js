@@ -11,6 +11,7 @@ import Animated, {
 import {connect} from 'react-redux';
 import Toast from 'react-native-toast-message';
 import axios from 'axios';
+import {useNavigation} from '@react-navigation/native';
 const AddButton = ({
   maxRasa,
   rasa,
@@ -23,7 +24,10 @@ const AddButton = ({
   noHP,
   text,
   before,
+  setRefreshKeranjang,
+  refreshKeranjang,
 }) => {
+  const navigation = useNavigation();
   const {width} = useWindowDimensions();
   const scaleValue = useSharedValue(1);
   const animatedStyles = useAnimatedStyle(() => {
@@ -44,7 +48,6 @@ const AddButton = ({
         },
       })
       .then(res => {
-        console.log(res.data.data[0].Exist);
         if (res.data.data[0].Exist === 0) {
           axios
             .post('https://server-koce.herokuapp.com/keranjang/tambah', {
@@ -56,12 +59,14 @@ const AddButton = ({
               jumlah: jumlah,
               variasi: JSON.stringify(namaRasa),
             })
-            .then(response => {
+            .then(() => {
               Toast.show({
                 type: 'sukses',
                 text1: `${namaMakanan} ${namaRasa} berhasil ditambahkan`,
                 visibilityTime: 2000,
               });
+              setRefreshKeranjang(!refreshKeranjang);
+              navigation.goBack();
             })
             .catch(err => {
               console.log(err);
@@ -100,13 +105,6 @@ const AddButton = ({
           }}
           onPress={() => {
             handleAddKeranjang();
-            console.log({namaRasa});
-            console.log({hargaTotal});
-            console.log({hargaAsli});
-            console.log({namaMakanan});
-            console.log({jumlah});
-            console.log({foto});
-            console.log({noHP});
           }}
           onPressOut={() => {
             scaleValue.value = withTiming(1, {
@@ -150,9 +148,16 @@ const mapStateToProps = state => {
   return {
     rasa: state.rasa,
     namaRasa: state.namaRasa,
+    refreshKeranjang: state.refreshKeranjang,
   };
 };
-export default connect(mapStateToProps)(AddButton);
+const mapDispatchToProps = dispatch => {
+  return {
+    setRefreshKeranjang: data =>
+      dispatch({type: 'REFRESH_KERANJANG', payload: data}),
+  };
+};
+export default connect(mapStateToProps, mapDispatchToProps)(AddButton);
 
 const styles = StyleSheet.create({
   container: {

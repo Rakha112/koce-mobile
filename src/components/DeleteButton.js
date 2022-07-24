@@ -1,11 +1,18 @@
-import {StyleSheet, Text, View} from 'react-native';
+import {StyleSheet} from 'react-native';
 import React from 'react';
 import DeleteIcon from '../assets/svg/DeleteIcon.svg';
 import {TouchableWithoutFeedback} from 'react-native-gesture-handler';
 import axios from 'axios';
 import Toast from 'react-native-toast-message';
 import {useNavigation} from '@react-navigation/native';
-const DeleteButton = ({noHP, menu}) => {
+import {connect} from 'react-redux';
+const DeleteButton = ({
+  noHP,
+  menu,
+  data,
+  setRefreshKeranjang,
+  refreshKeranjang,
+}) => {
   const navigation = useNavigation();
   return (
     <TouchableWithoutFeedback
@@ -15,6 +22,7 @@ const DeleteButton = ({noHP, menu}) => {
             params: {
               noHP: noHP,
               menu: menu,
+              variasi: data.Variasi,
             },
           })
           .then(res => {
@@ -23,6 +31,7 @@ const DeleteButton = ({noHP, menu}) => {
               text1: `Berhasil menghapus ${menu} dari keranjang`,
               visibilityTime: 2000,
             });
+            setRefreshKeranjang(!refreshKeranjang);
             navigation.goBack();
           })
           .catch(err => {
@@ -34,8 +43,19 @@ const DeleteButton = ({noHP, menu}) => {
     </TouchableWithoutFeedback>
   );
 };
+const mapStateToProps = state => {
+  return {
+    refreshKeranjang: state.refreshKeranjang,
+  };
+};
+const mapDispatchToProps = dispatch => {
+  return {
+    setRefreshKeranjang: data =>
+      dispatch({type: 'REFRESH_KERANJANG', payload: data}),
+  };
+};
 
-export default DeleteButton;
+export default connect(mapStateToProps, mapDispatchToProps)(DeleteButton);
 
 const styles = StyleSheet.create({
   container: {

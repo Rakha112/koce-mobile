@@ -22,9 +22,9 @@ import DeleteButton from '../components/DeleteButton';
 const DetailedMenu = ({route, counter, setCounter, networkStatus, noHP}) => {
   const navigation = useNavigation();
   const {width} = useWindowDimensions();
-  const {item, before} = route.params;
+  const {item, before, data} = route.params;
   const [maxRasa] = useState(item.Variasi[0].MaxPilihan);
-  const [data] = useState(
+  const [variasi] = useState(
     before === 'Home' ? item.Variasi : JSON.parse(item.Variasi),
   );
   useEffect(() => {
@@ -65,7 +65,7 @@ const DetailedMenu = ({route, counter, setCounter, networkStatus, noHP}) => {
             </View>
             <Text style={styles.textDeskripsi}>{item.Deskripsi}</Text>
           </View>
-          {data.map((value, index) => {
+          {variasi.map((value, index) => {
             return (
               <View style={{marginTop: 10}} key={index}>
                 <View style={{flexDirection: 'row', alignItems: 'center'}}>
@@ -99,7 +99,7 @@ const DetailedMenu = ({route, counter, setCounter, networkStatus, noHP}) => {
           {before === 'Home' ? (
             <></>
           ) : (
-            <DeleteButton noHP={noHP} menu={item.Nama} />
+            <DeleteButton noHP={noHP} menu={item.Nama} data={data} />
           )}
           <AddButton
             noHP={noHP}
